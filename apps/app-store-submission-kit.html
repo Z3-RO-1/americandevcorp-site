@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>App Store Submission Kit | American Dev Corp</title>
+  <meta name="description" content="Checklist for Expo to App Store Connect submission work.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/projects/">Projects</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="wrap prose">
+      <p class="eyebrow">Submission Kit</p>
+      <h1>iOS App Store submission checklist</h1>
+      <p>This page exists to organize the required public URLs and metadata fields for your iOS apps.</p>
+
+      <h2>Public URLs needed</h2>
+      <ul class="list">
+        <li>App privacy policy URL</li>
+        <li>Support page URL</li>
+        <li>Optional terms URL</li>
+      </ul>
+
+      <h2>App Store Connect fields to prepare</h2>
+      <ul class="list">
+        <li>App name</li>
+        <li>Primary language</li>
+        <li>Bundle identifier</li>
+        <li>SKU</li>
+        <li>Subtitle</li>
+        <li>Category</li>
+        <li>Age rating answers</li>
+        <li>Privacy policy URL</li>
+        <li>Description</li>
+        <li>Keywords</li>
+        <li>Support URL</li>
+        <li>Marketing URL if you want one</li>
+        <li>Screenshots for required device sizes</li>
+        <li>App icon</li>
+      </ul>
+
+      <h2>Expo / EAS items to prepare</h2>
+      <ul class="list">
+        <li>`ios.bundleIdentifier` in `app.json` or app config</li>
+        <li>EAS account login</li>
+        <li>Apple Developer account access</li>
+        <li>App Store Connect app entry created first</li>
+        <li>Submission profile in `eas.json`</li>
+        <li>Build ready for `eas build --platform ios`</li>
+      </ul>
+
+      <h2>Per-app intake</h2>
+      <p>For each app you want to submit, collect these before the actual submission pass:</p>
+      <ul class="list">
+        <li>App name</li>
+        <li>Short description of what it does</li>
+        <li>Whether it collects any user data</li>
+        <li>Whether login/account creation exists</li>
+        <li>Bundle identifier currently used in Expo</li>
+        <li>Current repo or source location</li>
+      </ul>
+    </div>
+  </main>
+</body>
+</html>
