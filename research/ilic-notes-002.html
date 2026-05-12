@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iLiC Notes 002 | American Dev Corp</title>
+  <meta name="description" content="iLiC Notes 002 on memory-native systems versus assistant memory.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/projects/">Projects</a>
+        <a href="/research/">Research</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <article class="wrap prose post-shell">
+      <header class="post-header">
+        <p class="eyebrow">iLiC Notes 002</p>
+        <h1>Memory-Native Systems vs Assistant Memory</h1>
+        <p class="post-subtitle">
+          A draft public note comparing survivable memory structures with assistant-style memory conveniences.
+        </p>
+        <div class="post-meta">
+          <span>May 12, 2026</span>
+          <span class="status-pill">Research Note</span>
+        </div>
+      </header>
+
+      <section class="post-section">
+        <h2>Summary</h2>
+        <p>
+          Many AI products describe memory as an added feature: something that helps personalize answers, recover
+          preferences, or continue a conversation. Memory-native systems treat memory differently. Instead of a feature,
+          continuity becomes part of the operating substrate.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Problem</h2>
+        <p>
+          Assistant memory can improve convenience while still remaining shallow. It may recall isolated facts, but not
+          govern how those facts are written, updated, or constrained. That leaves open questions about survivability,
+          conflict resolution, auditability, and long-term state integrity.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Constraint</h2>
+        <p>
+          A system that preserves continuity must decide not only what it remembers, but how memory enters the system,
+          how it is revised, and what authority is allowed to change it. Without that layer, memory remains helpful but
+          not structurally dependable.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Design Principle</h2>
+        <p>
+          Memory-native design starts from continuity rather than convenience. The objective is not to collect more
+          remembered fragments, but to build inspectable and survivable memory behavior under explicit runtime
+          constraints.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Architecture Direction</h2>
+        <p>
+          Publicly, this means focusing on memory continuity, governed write paths, bounded retrieval behavior, and
+          human-readable runtime structure. A memory-native system is less about “remembering more” and more about
+          making continuity legible and durable.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Tradeoffs</h2>
+        <p>
+          Memory-native systems may appear more conservative than consumer assistants because they prioritize controlled
+          persistence over improvisational convenience. The benefit is stronger continuity and clearer system behavior.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What Is Intentionally Not Disclosed</h2>
+        <p>
+          This note does not expose private memory contents, folder structures, file inventories, code-level writeback
+          logic, or internal controls that are not appropriate for public publication.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Current Status</h2>
+        <p>
+          This note is intentionally public and high level. It exists to clarify terminology and system framing while
+          preserving appropriate implementation boundaries.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>References</h2>
+        <ul class="references">
+          <li>Public literature on durable state, system recovery, and data governance.</li>
+          <li>Research and practice around inspectable runtime behavior and bounded persistence.</li>
+        </ul>
+      </section>
+
+      <nav class="continuity-nav" aria-label="Research continuity navigation">
+        <a href="/research/">Research index</a>
+        <a href="/research/ilic-notes-001.html">Previous note</a>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <strong>American Dev Corp</strong>
+      </div>
+      <div>
+        <a href="/research/">Research</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

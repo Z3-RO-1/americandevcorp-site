@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iLiC Notes 001 | American Dev Corp</title>
+  <meta name="description" content="iLiC Notes 001 on governed cognition, deterministic control, and advisory AI infrastructure.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/projects/">Projects</a>
+        <a href="/research/">Research</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <article class="wrap prose post-shell">
+      <header class="post-header">
+        <p class="eyebrow">iLiC Notes 001</p>
+        <h1>Why Governed Cognition Matters</h1>
+        <p class="post-subtitle">
+          A public architecture note on deterministic control, memory continuity, and AI as advisory infrastructure.
+        </p>
+        <div class="post-meta">
+          <span>May 12, 2026</span>
+          <span class="status-pill">Public Architecture Note</span>
+        </div>
+      </header>
+
+      <section class="post-section">
+        <h2>Summary</h2>
+        <p>
+          Much of modern AI conversation assumes that more capability should naturally imply more authority. Governed
+          cognition starts from the opposite position: probabilistic systems can be useful, but usefulness does not
+          justify uncontrolled state mutation, unbounded memory growth, or opaque runtime behavior.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Problem</h2>
+        <p>
+          A typical assistant can sound coherent while still being structurally fragile. It may lose continuity across
+          sessions, over-accept uncertain information, or blur the line between stored knowledge and generated language.
+          That behavior is acceptable in some products, but it becomes risky when the system is expected to preserve
+          continuity and behave inspectably over time.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Constraint</h2>
+        <p>
+          The central constraint is that AI output should not be treated as sovereign truth. If a system is meant to
+          sustain continuity, it needs explicit authority boundaries around memory, state transitions, and write paths.
+          Otherwise the runtime becomes difficult to audit and even harder to stabilize.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Design Principle</h2>
+        <p>
+          Governed cognition treats probabilistic intelligence as advisory infrastructure operating under deterministic
+          rules. The goal is not to eliminate AI assistance, but to contain it inside inspectable runtime boundaries so
+          memory continuity and system behavior remain legible.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Architecture Direction</h2>
+        <p>
+          Publicly, the direction can be described simply: a deterministic runtime governs how queries are analyzed,
+          what memory is retrieved, what information is eligible for persistence, and how outputs remain bounded. AI is
+          used to assist within that structure rather than to replace it.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Tradeoffs</h2>
+        <p>
+          This approach can feel stricter and slower than a free-form assistant design. Some responses will be more
+          conservative, and certain kinds of improvisation will be intentionally limited. The tradeoff is that the
+          system becomes easier to reason about, safer to evolve, and more compatible with long-term continuity.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What Is Intentionally Not Disclosed</h2>
+        <p>
+          This note does not disclose private repositories, internal prompts, exact algorithms, private memory contents,
+          implementation code, operational keys, or sensitive architecture details that would weaken the public boundary
+          around the project.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Current Status</h2>
+        <p>
+          This is a public framing note. It describes the governing direction of the work rather than its private
+          implementation details. Additional public notes will focus on architecture principles, continuity, and runtime
+          hardening as those topics can be discussed safely.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>References</h2>
+        <ul class="references">
+          <li>Butler Lampson, “Hints for Computer System Design.”</li>
+          <li>Barbara Liskov and Jeannette Wing, “A Behavioral Notion of Subtyping.”</li>
+          <li>Public literature on finite-state control, auditable systems, and safety-oriented runtime design.</li>
+        </ul>
+      </section>
+
+      <nav class="continuity-nav" aria-label="Research continuity navigation">
+        <a href="/research/">Research index</a>
+        <a href="/research/ilic-notes-002.html">Next note</a>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <strong>American Dev Corp</strong>
+      </div>
+      <div>
+        <a href="/research/">Research</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
