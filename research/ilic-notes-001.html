@@ -38,73 +38,97 @@
       <section class="post-section">
         <h2>Summary</h2>
         <p>
-          Much of modern AI conversation assumes that more capability should naturally imply more authority. Governed
-          cognition starts from the opposite position: probabilistic systems can be useful, but usefulness does not
-          justify uncontrolled state mutation, unbounded memory growth, or opaque runtime behavior.
+          iLiC is a governed cognition architecture exploring deterministic control, memory continuity, inspectable
+          state transitions, and advisory AI behavior under explicit runtime constraints. The central claim behind that
+          work is straightforward: a system does not become more trustworthy merely because it can generate more fluent
+          output. It becomes more trustworthy when its authority is bounded, its state is legible, and its mutations
+          can be understood before they are accepted.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Problem</h2>
         <p>
-          A typical assistant can sound coherent while still being structurally fragile. It may lose continuity across
-          sessions, over-accept uncertain information, or blur the line between stored knowledge and generated language.
-          That behavior is acceptable in some products, but it becomes risky when the system is expected to preserve
-          continuity and behave inspectably over time.
+          Many conversational systems optimize first for fluency and only later discover that fluency hides structural
+          fragility. A model may answer smoothly while still losing continuity across sessions, accepting uncertain
+          claims as if they were settled facts, or blurring the difference between generated language and remembered
+          state. That gap matters most when a system is expected to remain stable over time. If continuity, recall, and
+          revision are part of the product surface, then governance is no longer optional background work. It becomes
+          part of the architecture itself.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Constraint</h2>
         <p>
-          The central constraint is that AI output should not be treated as sovereign truth. If a system is meant to
-          sustain continuity, it needs explicit authority boundaries around memory, state transitions, and write paths.
-          Otherwise the runtime becomes difficult to audit and even harder to stabilize.
+          The governing constraint is that advisory intelligence should not be treated as sovereign truth. A system that
+          remembers, revises, and persists state needs explicit limits around what can influence memory, when state can
+          change, and how those changes become visible to the operator. Without those limits, continuity becomes
+          impressionistic rather than durable. The system may appear capable, but its long-term behavior becomes
+          difficult to audit and even harder to stabilize.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Design Principle</h2>
         <p>
-          Governed cognition treats probabilistic intelligence as advisory infrastructure operating under deterministic
-          rules. The goal is not to eliminate AI assistance, but to contain it inside inspectable runtime boundaries so
-          memory continuity and system behavior remain legible.
+          Governed cognition starts from a simple inversion: the model is not the runtime authority. In iLiC, the
+          runtime is expected to remain state-governed, inspectable, and bounded, while probabilistic intelligence is
+          used as advisory infrastructure within those constraints. The goal is not to suppress useful AI behavior. The
+          goal is to prevent advisory behavior from silently becoming control.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Architecture Direction</h2>
         <p>
-          Publicly, the direction can be described simply: a deterministic runtime governs how queries are analyzed,
-          what memory is retrieved, what information is eligible for persistence, and how outputs remain bounded. AI is
-          used to assist within that structure rather than to replace it.
+          Publicly, the architecture direction can be described without exposing internals. A deterministic runtime
+          governs how interaction moves through explicit stages, how continuity is preserved, what forms of information
+          are eligible for persistence, and how response behavior remains bounded. AI participates as an advisor inside
+          that structure rather than as an uninspected controller above it. The result is a system that aims for calm
+          interaction, explicit transitions, and a clearer separation between suggestion and authority.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Visible Mutation and Overwrite Governance</h2>
+        <p>
+          A governed cognition system must distinguish between creating knowledge and mutating existing knowledge. Those
+          are not the same act. Writing a new definition, preference, or remembered fact is one category of event.
+          Replacing a prior definition or mutating an already-held interpretation is another. The second category
+          carries more risk because it changes continuity, not just content. For that reason, mutation should be
+          inspectable, reviewable, and intentionally approved. Trust grows when the operator can see not only that a
+          system is changing, but what kind of change it is making.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Tradeoffs</h2>
         <p>
-          This approach can feel stricter and slower than a free-form assistant design. Some responses will be more
-          conservative, and certain kinds of improvisation will be intentionally limited. The tradeoff is that the
-          system becomes easier to reason about, safer to evolve, and more compatible with long-term continuity.
+          This style of runtime can feel stricter than a free-form assistant. Some interactions will be more
+          conservative, some revisions will require explicit confirmation, and some forms of improvisation will be
+          intentionally constrained. That is a deliberate trade. The system gives up a degree of effortless fluidity in
+          exchange for clearer authority boundaries, more survivable continuity, and more reliable long-term behavior.
         </p>
       </section>
 
       <section class="post-section boundary-note">
         <h2>What Is Intentionally Not Disclosed</h2>
         <p>
-          This note does not disclose private repositories, internal prompts, exact algorithms, private memory contents,
-          implementation code, operational keys, or sensitive architecture details that would weaken the public boundary
-          around the project.
+          This note does not disclose private repositories, internal prompts, memory contents, implementation code,
+          runtime logic, operational keys, or sensitive architecture details that would weaken the project’s public
+          boundary. The purpose of this series is to clarify governing principles, not to publish the private mechanics
+          of the system.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Current Status</h2>
         <p>
-          This is a public framing note. It describes the governing direction of the work rather than its private
-          implementation details. Additional public notes will focus on architecture principles, continuity, and runtime
-          hardening as those topics can be discussed safely.
+          This note functions as a public governance paper for the project. It describes the operational philosophy of
+          the system rather than its private internals. Future notes will continue to focus on continuity, memory,
+          runtime hardening, and human-readable control boundaries where those subjects can be discussed safely in
+          public.
         </p>
       </section>
 

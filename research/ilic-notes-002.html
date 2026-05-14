@@ -38,69 +38,81 @@
       <section class="post-section">
         <h2>Summary</h2>
         <p>
-          Many AI products describe memory as an added feature: something that helps personalize answers, recover
-          preferences, or continue a conversation. Memory-native systems treat memory differently. Instead of a feature,
-          continuity becomes part of the operating substrate.
+          Many AI products describe memory as a convenience feature. It helps personalize answers, recover preferences,
+          or make a conversation feel less disposable. Memory-native systems begin from a different premise. In a
+          governed cognition architecture, continuity is not an accessory layered on top of interaction. It is part of
+          the operating substrate itself.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Problem</h2>
         <p>
-          Assistant memory can improve convenience while still remaining shallow. It may recall isolated facts, but not
-          govern how those facts are written, updated, or constrained. That leaves open questions about survivability,
-          conflict resolution, auditability, and long-term state integrity.
+          Most systems that claim memory still behave as if recall were interchangeable with continuity. They may return
+          relevant fragments, but they do not necessarily preserve stable context, govern revisions, or keep retrieval
+          behavior inspectable over time. That distinction matters. A system can retrieve a useful fact and still fail
+          the broader continuity problem. It can recall isolated information while remaining structurally weak in how it
+          carries state forward from one interaction to the next.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Constraint</h2>
         <p>
-          A system that preserves continuity must decide not only what it remembers, but how memory enters the system,
-          how it is revised, and what authority is allowed to change it. Without that layer, memory remains helpful but
-          not structurally dependable.
+          A continuity-bearing system must decide not only what it remembers, but how memory enters the system, how it
+          is revised, and what authority is permitted to change it. Without that layer, memory remains helpful but not
+          dependable. The result is often a familiar pattern: the system appears to remember, but the operator cannot
+          reliably predict what will be recalled, preserved, merged, or forgotten.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Design Principle</h2>
         <p>
-          Memory-native design starts from continuity rather than convenience. The objective is not to collect more
-          remembered fragments, but to build inspectable and survivable memory behavior under explicit runtime
-          constraints.
+          Memory-native design starts from continuity bandwidth rather than convenience. The question is not simply
+          whether a system can retrieve a relevant fragment. The question is whether it can sustain coherent continuity
+          under pressure: across sessions, across revisions, across partial recall, and across the slow accumulation of
+          remembered context. That requires memory behavior that is inspectable, bounded, and survivable.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Architecture Direction</h2>
         <p>
-          Publicly, this means focusing on memory continuity, governed write paths, bounded retrieval behavior, and
-          human-readable runtime structure. A memory-native system is less about “remembering more” and more about
-          making continuity legible and durable.
+          Publicly, the architecture direction is not “more memory,” but better-governed continuity. That means treating
+          recall as part of runtime behavior rather than as a detached retrieval trick. A memory-native system should be
+          able to preserve conversational continuity, maintain bounded recall behavior, and remain understandable to the
+          operator even as remembered context accumulates. In that model, memory is not just stored reference material.
+          It becomes cognitive infrastructure.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Tradeoffs</h2>
         <p>
-          Memory-native systems may appear more conservative than consumer assistants because they prioritize controlled
-          persistence over improvisational convenience. The benefit is stronger continuity and clearer system behavior.
+          This approach is more demanding than assistant-style memory. It places more emphasis on curation, boundary
+          setting, and continuity integrity than on effortless personalization. Some forms of loose retrieval may be
+          reduced, and some interactions may become more deliberate. The tradeoff is that memory becomes more durable,
+          recall becomes more interpretable, and continuity degrades less easily under repetition and change.
         </p>
       </section>
 
       <section class="post-section boundary-note">
         <h2>What Is Intentionally Not Disclosed</h2>
         <p>
-          This note does not expose private memory contents, folder structures, file inventories, code-level writeback
-          logic, or internal controls that are not appropriate for public publication.
+          This note does not disclose private memory contents, storage schemas, folder structures, code-level writeback
+          behavior, or internal controls that are not appropriate for public publication. The purpose here is to clarify
+          the architectural distinction between retrieval and continuity without weakening the boundary around the
+          implementation itself.
         </p>
       </section>
 
       <section class="post-section">
         <h2>Current Status</h2>
         <p>
-          This note is intentionally public and high level. It exists to clarify terminology and system framing while
-          preserving appropriate implementation boundaries.
+          This note is intentionally public and architectural. It exists to clarify how iLiC frames memory as governed
+          continuity rather than as a lightweight assistant feature. Later public notes may discuss continuity integrity,
+          recall boundaries, and human-centered memory interfaces where those topics can be addressed safely.
         </p>
       </section>
 
