@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iLiC Notes 003 | American Dev Corp</title>
+  <meta name="description" content="iLiC Notes 003 on visible mutation, overwrite governance, and inspectable cognition behavior.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/projects/">Projects</a>
+        <a href="/research/">Research</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <article class="wrap prose post-shell">
+      <header class="post-header">
+        <p class="eyebrow">iLiC Notes 003</p>
+        <h1>Visible Mutation and Governed Overwrite Behavior</h1>
+        <p class="post-subtitle">
+          A public architecture note on mutation trust, explicit overwrite boundaries, and inspectable continuity behavior.
+        </p>
+        <div class="post-meta">
+          <span>May 14, 2026</span>
+          <span class="status-pill">Engineering Note</span>
+        </div>
+      </header>
+
+      <section class="post-section">
+        <h2>Summary</h2>
+        <p>
+          In most interactive systems, mutation is treated as a background action. A user edits something, the system
+          accepts the change, and the internal state quietly moves on. A governed cognition architecture cannot treat
+          mutation so casually. If continuity is meant to survive across time, then changing remembered state is not a
+          minor implementation detail. It is a governance event. This note argues that mutation trust depends on making
+          overwrite behavior visible before commit rather than explaining it after the fact.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Problem</h2>
+        <p>
+          Conventional AI interactions often blur together several very different operations: introducing new
+          information, revising prior information, replacing an existing interpretation, or deleting a previously held
+          association. That ambiguity may be tolerable in disposable chat. It becomes dangerous in a continuity-bearing
+          system. If the operator cannot tell whether the system is creating knowledge or mutating prior state, trust
+          begins to erode. The risk is not only error. The deeper problem is opacity around what kind of change is being
+          proposed.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Constraint</h2>
+        <p>
+          A system that preserves memory continuity cannot permit advisory behavior to rewrite remembered state without
+          explicit boundaries. The operator must be able to understand when a mutation is being proposed, what existing
+          continuity it would affect, and what the system will preserve if the proposal is rejected. Without those
+          boundaries, memory becomes less like infrastructure and more like an unstable narrative layer that changes too
+          easily under surface interaction pressure.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Design Principle</h2>
+        <p>
+          The central design principle is simple: mutation must remain visible. A governed cognition system should
+          distinguish between writing new knowledge and overwriting prior knowledge, and it should treat those acts as
+          different categories of event. The first may be additive. The second is revisionary. Revision carries more
+          weight because it touches continuity itself. That is why mutation proposals should be inspectable, reviewable,
+          and intentionally approved.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Architecture Direction</h2>
+        <p>
+          Publicly, the architecture direction is not to make mutation invisible and then rely on later recovery. It is
+          to make mutation understandable at the moment it matters. A continuity system should present a proposed change
+          as a bounded decision: what exists now, what is being proposed, and what remains preserved if the operator
+          declines. That pattern turns mutation into an explicit interaction state rather than a hidden side effect. The
+          result is calmer behavior, clearer trust boundaries, and more inspectable cognition over time.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Tradeoffs</h2>
+        <p>
+          Visible mutation is slower than silent mutation. It introduces more explicit checkpoints and asks more of both
+          the system and the operator. In exchange, it reduces ambiguity around overwrite behavior and makes continuity
+          easier to preserve under pressure. This is a deliberate trade. In a governed runtime, trust infrastructure is
+          more important than feature count, and mutation transparency is one of the costs of earning that trust.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Current Status</h2>
+        <p>
+          This note reflects a hardening stage rather than a speculative one. It emerges from runtime pressure, where
+          interaction reliability, preservation semantics, and explicit mutation visibility become more important than
+          adding new capabilities. In that sense, this paper marks a shift from broad governance philosophy toward more
+          focused runtime-governed interaction behavior.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What Is Intentionally Not Disclosed</h2>
+        <p>
+          This note does not disclose private runtime paths, storage schemas, implementation logic, prompts, or other
+          internal mechanisms used to govern mutation behavior. The public purpose of the note is to explain the
+          architectural distinction between visible and silent mutation without weakening the implementation boundary.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>References</h2>
+        <ul class="references">
+          <li>Public systems literature on transaction safety, auditable state change, and explicit approval boundaries.</li>
+          <li>Research and practice around human-in-the-loop review for high-trust system operations.</li>
+          <li>Prior iLiC Notes on governed cognition and memory-native continuity as the conceptual foundation for this note.</li>
+        </ul>
+      </section>
+
+      <nav class="continuity-nav" aria-label="Research continuity navigation">
+        <a href="/research/">Research index</a>
+        <a href="/research/ilic-notes-002.html">Previous note</a>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <strong>American Dev Corp</strong>
+      </div>
+      <div>
+        <a href="/research/">Research</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
