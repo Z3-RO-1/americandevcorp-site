@@ -326,6 +326,37 @@ button.button {
   margin: 0;
 }
 
+.hidden {
+  display: none;
+}
+
+.success-wall {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: grid;
+  place-items: center;
+  padding: 1.5rem;
+  background: linear-gradient(180deg, rgba(248, 246, 242, 0.98) 0%, rgba(241, 236, 227, 0.98) 100%);
+}
+
+.success-wall.hidden {
+  display: none;
+}
+
+.success-card {
+  width: min(760px, 100%);
+  padding: clamp(1.5rem, 4vw, 3rem);
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  box-shadow: 0 24px 70px rgba(48, 44, 38, 0.14);
+}
+
+.has-success-wall {
+  overflow: hidden;
+}
+
 .prose {
   max-width: 760px;
 }

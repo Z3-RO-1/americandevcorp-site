@@ -23,6 +23,18 @@
   </header>
 
   <main>
+    <section class="success-wall hidden" id="successWall" aria-live="polite">
+      <div class="success-card">
+        <p class="eyebrow">Request Prepared</p>
+        <h1>Message successfully sent.</h1>
+        <p class="lead">
+          Thank you for requesting iOS App Submission Service support. Someone from the American Dev Corp team will
+          reach back to you as soon as possible.
+        </p>
+        <a class="button" href="/">Return to American Dev Corp</a>
+      </div>
+    </section>
+
     <section class="hero service-hero">
       <div class="wrap">
         <p class="eyebrow">iOS App Submission Service</p>
@@ -219,6 +231,11 @@
         const body = formDataToBody(form);
         const href = `mailto:${intakeEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
         window.location.href = href;
+        window.setTimeout(() => {
+          document.getElementById("successWall").classList.remove("hidden");
+          document.body.classList.add("has-success-wall");
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        }, 700);
       });
     });
   </script>
