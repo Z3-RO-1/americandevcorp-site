@@ -1,0 +1,215 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin | American Dev Corp</title>
+  <meta name="robots" content="noindex, nofollow">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/services/">Services</a>
+        <a href="/projects/">Projects</a>
+        <a href="/research/">Research</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="wrap admin-shell">
+      <section class="card admin-login" id="loginPanel">
+        <p class="eyebrow">Private Admin</p>
+        <h1>Sign in</h1>
+        <p>Access intake request forms, approve or deny requests, and review authorized application submissions.</p>
+        <form class="intake-form" id="loginForm">
+          <label>Admin Password
+            <input name="password" type="password" autocomplete="current-password" required>
+          </label>
+          <p class="form-status" id="loginStatus"></p>
+          <button class="button" type="submit">Sign In</button>
+        </form>
+      </section>
+
+      <section class="hidden" id="adminPanel">
+        <div class="admin-header">
+          <div>
+            <p class="eyebrow">American Dev Corp Admin</p>
+            <h1>Intake inboxes</h1>
+          </div>
+          <button class="button button-secondary" id="logoutButton" type="button">Sign Out</button>
+        </div>
+
+        <div class="admin-tabs">
+          <button class="button" type="button" data-tab="requests">Request Submissions</button>
+          <button class="button button-secondary" type="button" data-tab="applications">Application Submissions</button>
+        </div>
+
+        <section class="admin-inbox" id="requestsInbox">
+          <h2>Service Request Inbox</h2>
+          <p class="form-note">Approve requests to generate a 6-digit access code and email acceptance literature. Deny requests to send soft rejection language.</p>
+          <div class="admin-list" id="requestsList"></div>
+        </section>
+
+        <section class="admin-inbox hidden" id="applicationsInbox">
+          <h2>Application Submission Inbox</h2>
+          <p class="form-note">Detailed application intake submissions appear here after a requester uses an approved access code.</p>
+          <div class="admin-list" id="applicationsList"></div>
+        </section>
+      </section>
+    </div>
+  </main>
+
+  <script>
+    async function api(url, options = {}) {
+      const response = await fetch(url, {
+        credentials: "include",
+        headers: { "Content-Type": "application/json", ...(options.headers || {}) },
+        ...options
+      });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) throw new Error(data.error || "Request failed.");
+      return data;
+    }
+
+    function escapeHTML(value) {
+      return String(value || "").replace(/[&<>"']/g, (char) => ({
+        "&": "&amp;",
+        "<": "&lt;",
+        ">": "&gt;",
+        '"': "&quot;",
+        "'": "&#039;"
+      }[char]));
+    }
+
+    function fieldsHTML(fields = {}) {
+      return Object.entries(fields)
+        .map(([key, value]) => `<dt>${escapeHTML(key)}</dt><dd>${escapeHTML(value)}</dd>`)
+        .join("");
+    }
+
+    function requestCard(item) {
+      const status = item.status || "new";
+      const approved = status === "approved";
+      const denied = status === "denied";
+      return `
+        <article class="admin-card">
+          <div class="admin-card-top">
+            <div>
+              <h3>${escapeHTML(item.appName || item.fields?.["App Name or Working Title"] || "Untitled app")}</h3>
+              <p>${escapeHTML(item.requesterEmail || item.fields?.Email || "")}</p>
+            </div>
+            <span class="status-pill">${escapeHTML(status)}</span>
+          </div>
+          ${item.accessCode ? `<p class="code-pill">Access code: ${escapeHTML(item.accessCode)}</p>` : ""}
+          <details>
+            <summary>View request details</summary>
+            <dl class="admin-fields">${fieldsHTML(item.fields)}</dl>
+          </details>
+          <div class="admin-actions">
+            <button class="button" data-decision="approved" data-id="${escapeHTML(item.id)}" ${approved ? "disabled" : ""}>Approve + Send Code</button>
+            <button class="button button-secondary" data-decision="denied" data-id="${escapeHTML(item.id)}" ${denied ? "disabled" : ""}>Deny + Send Reply</button>
+          </div>
+        </article>
+      `;
+    }
+
+    function applicationCard(item) {
+      return `
+        <article class="admin-card">
+          <div class="admin-card-top">
+            <div>
+              <h3>${escapeHTML(item.appName || item.fields?.["Full Application Name"] || "Untitled app")}</h3>
+              <p>${escapeHTML(item.requesterEmail || item.fields?.Email || "")}</p>
+            </div>
+            <span class="status-pill">${escapeHTML(item.status || "new")}</span>
+          </div>
+          <p class="form-note">Request ID: ${escapeHTML(item.requestId || "")}</p>
+          <details open>
+            <summary>View application details</summary>
+            <dl class="admin-fields">${fieldsHTML(item.fields)}</dl>
+          </details>
+        </article>
+      `;
+    }
+
+    async function loadRequests() {
+      const list = document.getElementById("requestsList");
+      list.innerHTML = "<p>Loading requests...</p>";
+      const data = await api("/api/admin/submissions?type=requests");
+      list.innerHTML = data.items.length ? data.items.map(requestCard).join("") : "<p>No service requests yet.</p>";
+    }
+
+    async function loadApplications() {
+      const list = document.getElementById("applicationsList");
+      list.innerHTML = "<p>Loading applications...</p>";
+      const data = await api("/api/admin/submissions?type=applications");
+      list.innerHTML = data.items.length ? data.items.map(applicationCard).join("") : "<p>No application submissions yet.</p>";
+    }
+
+    async function showAdmin() {
+      document.getElementById("loginPanel").classList.add("hidden");
+      document.getElementById("adminPanel").classList.remove("hidden");
+      await loadRequests();
+    }
+
+    document.getElementById("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const status = document.getElementById("loginStatus");
+      status.textContent = "Signing in...";
+      try {
+        await api("/api/admin/login", {
+          method: "POST",
+          body: JSON.stringify({ password: event.currentTarget.elements.password.value })
+        });
+        status.textContent = "";
+        await showAdmin();
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    });
+
+    document.getElementById("logoutButton").addEventListener("click", async () => {
+      await api("/api/admin/logout", { method: "POST" });
+      window.location.reload();
+    });
+
+    document.querySelector(".admin-tabs").addEventListener("click", async (event) => {
+      const tab = event.target.dataset.tab;
+      if (!tab) return;
+      document.getElementById("requestsInbox").classList.toggle("hidden", tab !== "requests");
+      document.getElementById("applicationsInbox").classList.toggle("hidden", tab !== "applications");
+      if (tab === "requests") await loadRequests();
+      if (tab === "applications") await loadApplications();
+    });
+
+    document.getElementById("requestsList").addEventListener("click", async (event) => {
+      const button = event.target.closest("[data-decision]");
+      if (!button) return;
+      button.disabled = true;
+      button.textContent = "Sending...";
+      try {
+        const result = await api("/api/admin/decision", {
+          method: "POST",
+          body: JSON.stringify({ id: button.dataset.id, decision: button.dataset.decision })
+        });
+        await loadRequests();
+        if (result.code) alert(`Approved. Access code: ${result.code}`);
+      } catch (error) {
+        alert(error.message);
+        await loadRequests();
+      }
+    });
+
+    api("/api/admin/submissions?type=requests")
+      .then(showAdmin)
+      .catch(() => {});
+  </script>
+</body>
+</html>

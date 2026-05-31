@@ -326,6 +326,13 @@ button.button {
   margin: 0;
 }
 
+.form-status {
+  min-height: 1.4rem;
+  color: var(--accent-2);
+  line-height: 1.5;
+  margin: 0;
+}
+
 .hidden {
   display: none;
 }
@@ -357,6 +364,96 @@ button.button {
   overflow: hidden;
 }
 
+.access-card {
+  margin-top: 1rem;
+}
+
+.admin-shell {
+  display: grid;
+  gap: 1.25rem;
+}
+
+.admin-login {
+  max-width: 620px;
+}
+
+.admin-header,
+.admin-card-top,
+.admin-actions,
+.admin-tabs {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.admin-header {
+  margin-bottom: 1.25rem;
+}
+
+.admin-tabs {
+  justify-content: flex-start;
+  margin-bottom: 1.25rem;
+}
+
+.admin-inbox {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-list {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-card {
+  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  padding: 1rem;
+  box-shadow: 0 10px 30px rgba(48, 44, 38, 0.05);
+}
+
+.admin-card h3 {
+  margin: 0 0 0.25rem;
+}
+
+.admin-card p {
+  margin: 0.25rem 0;
+  color: var(--muted);
+}
+
+.admin-fields {
+  display: grid;
+  grid-template-columns: minmax(150px, 0.35fr) minmax(0, 1fr);
+  gap: 0.5rem 1rem;
+  margin: 1rem 0;
+}
+
+.admin-fields dt {
+  color: var(--muted);
+  font-weight: 700;
+}
+
+.admin-fields dd {
+  margin: 0;
+}
+
+.code-pill {
+  display: inline-block;
+  padding: 0.35rem 0.65rem;
+  border-radius: 999px;
+  background: rgba(15, 92, 77, 0.1);
+  color: var(--accent) !important;
+  font-weight: 700;
+}
+
+.button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
 .prose {
   max-width: 760px;
 }
@@ -379,6 +476,10 @@ hr {
   }
 
   .intake-form fieldset {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-fields {
     grid-template-columns: 1fr;
   }
 }

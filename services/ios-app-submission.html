@@ -43,19 +43,23 @@
           Use this form to request help preparing an iOS app for App Store submission. The request collects your contact
           details, app concept details, and how close the project is to being submission-ready.
         </p>
+        <div class="actions">
+          <a class="button" href="#service-request">Start Intake</a>
+          <a class="button button-secondary" href="#access-code">Access Code</a>
+        </div>
       </div>
     </section>
 
     <section class="section">
       <div class="wrap">
-        <article class="card intake-card">
+        <article class="card intake-card" id="service-request">
           <h2>Service Request Form</h2>
           <p>
-            After submitting, your email app will open a prepared message addressed to
-            <a href="mailto:gilbert.aguirre.office@gmail.com">gilbert.aguirre.office@gmail.com</a>.
+            Submit the service request for review. The request is saved to the private American Dev Corp backend
+            account and routed to <a href="mailto:gilbert.aguirre.office@gmail.com">gilbert.aguirre.office@gmail.com</a>.
           </p>
 
-          <form class="intake-form" data-mail-form data-subject="iOS App Submission Service Request">
+          <form class="intake-form" id="requestForm">
             <fieldset>
               <legend>Requester Details</legend>
               <label>Full Name
@@ -180,7 +184,150 @@
               This request does not submit your app to Apple. It sends American Dev Corp the information needed to
               evaluate the project and respond with next steps.
             </p>
-            <button class="button" type="submit">Email Service Request</button>
+            <p class="form-status" id="requestStatus"></p>
+            <button class="button" type="submit">Submit Service Request</button>
+          </form>
+        </article>
+
+        <article class="card intake-card access-card" id="access-code">
+          <p class="kicker">Access Code</p>
+          <h2>Already approved?</h2>
+          <p>
+            If American Dev Corp approved your service request, enter the email address from your request and the
+            6-digit access code you received. Matching requests will open the detailed application intake form with
+            your original details pre-filled.
+          </p>
+
+          <form class="intake-form" id="codeForm">
+            <fieldset>
+              <legend>Access the Application Intake</legend>
+              <label>Email used on request
+                <input name="email" type="email" required>
+              </label>
+              <label>6-digit access code
+                <input name="code" type="text" inputmode="numeric" maxlength="6" pattern="[0-9]{6}" required>
+              </label>
+            </fieldset>
+            <p class="form-status" id="codeStatus"></p>
+            <button class="button" type="submit">Open Application Intake</button>
+          </form>
+        </article>
+
+        <article class="card intake-card hidden" id="applicationIntake">
+          <p class="kicker">Authorized Intake</p>
+          <h2>Application Submission Details</h2>
+          <p>
+            Complete this form after approval. It is stored in a separate backend inbox for actual application
+            submissions and routed to American Dev Corp for review.
+          </p>
+
+          <form class="intake-form" id="applicationForm">
+            <input name="requestId" type="hidden">
+            <input name="code" type="hidden">
+
+            <fieldset>
+              <legend>Pre-filled Request Details</legend>
+              <label>Full Name
+                <input name="Full Name" type="text" required>
+              </label>
+              <label>Email
+                <input name="Email" type="email" required>
+              </label>
+              <label>Phone
+                <input name="Phone" type="tel" required>
+              </label>
+              <label>App Name or Working Title
+                <input name="App Name or Working Title" type="text" required>
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>App Store Connect Application Details</legend>
+              <label>Full Application Name
+                <input name="Full Application Name" type="text" required>
+              </label>
+              <label>Version Number
+                <input name="Version Number" type="text" placeholder="Example: 1.0.0" required>
+              </label>
+              <label>Subtitle
+                <input name="Subtitle" type="text">
+              </label>
+              <label>Primary Language
+                <input name="Primary Language" type="text" placeholder="English (U.S.)">
+              </label>
+              <label>Category
+                <input name="Category" type="text">
+              </label>
+              <label>Bundle ID
+                <input name="Bundle ID" type="text" placeholder="com.company.app">
+              </label>
+              <label>SKU
+                <input name="SKU" type="text">
+              </label>
+              <label>Copyright
+                <input name="Copyright" type="text" placeholder="© 2026 Company Name">
+              </label>
+              <label>Promotional Text
+                <textarea name="Promotional Text" rows="3"></textarea>
+              </label>
+              <label>Description
+                <textarea name="Description" rows="7" required></textarea>
+              </label>
+              <label>Keywords
+                <input name="Keywords" type="text" placeholder="Comma-separated keywords">
+              </label>
+              <label>Support URL
+                <input name="Support URL" type="url" placeholder="https://">
+              </label>
+              <label>Marketing URL
+                <input name="Marketing URL" type="url" placeholder="https://">
+              </label>
+            </fieldset>
+
+            <fieldset>
+              <legend>Review, Build, and Compliance</legend>
+              <label>Build Upload Notes
+                <textarea name="Build Upload Notes" rows="4" placeholder="Build number, TestFlight status, archive notes, or upload instructions."></textarea>
+              </label>
+              <label>Screenshot / Asset Links
+                <textarea name="Screenshot and Asset Links" rows="4" placeholder="Links to screenshots, app icon, review images, or asset folders."></textarea>
+              </label>
+              <label>Is sign-in required?
+                <select name="Sign In Required">
+                  <option>No</option>
+                  <option>Yes</option>
+                </select>
+              </label>
+              <label>Review Username
+                <input name="Review Username" type="text">
+              </label>
+              <label>Review Password
+                <input name="Review Password" type="text">
+              </label>
+              <label>Review Instructions
+                <textarea name="Review Instructions" rows="4"></textarea>
+              </label>
+              <label>Age Rating / Restricted Content Notes
+                <textarea name="Age Rating Notes" rows="4"></textarea>
+              </label>
+              <label>Encryption / Export Compliance Notes
+                <textarea name="Encryption Notes" rows="4"></textarea>
+              </label>
+              <label>Release Preference
+                <select name="Release Preference" required>
+                  <option value="">Select release preference</option>
+                  <option>Manually release after approval</option>
+                  <option>Automatically release after approval</option>
+                  <option>Automatically release no earlier than selected date/time</option>
+                </select>
+              </label>
+              <label>Earliest Release Date / Time
+                <input name="Earliest Release Date Time" type="text" placeholder="MM/DD/YYYY 00:00 AM/PM">
+              </label>
+            </fieldset>
+
+            <p class="form-status" id="applicationStatus"></p>
+            <button class="button" type="submit">Submit Application Intake</button>
           </form>
         </article>
       </div>
@@ -201,42 +348,110 @@
         <a href="/projects/">Projects</a>
         <a href="/policies/privacy.html">Privacy Policy</a>
         <a href="/policies/terms.html">Terms</a>
+        <a href="/admin/">Admin Sign In</a>
       </div>
     </div>
   </footer>
 
   <script>
-    const intakeEmail = "gilbert.aguirre.office@gmail.com";
-
-    function formDataToBody(form) {
+    function formToObject(form) {
       const data = new FormData(form);
-      const lines = [];
+      const output = {};
 
       for (const [key, value] of data.entries()) {
         const normalized = String(value).trim();
         if (normalized) {
-          lines.push(`${key}: ${normalized}`);
+          output[key] = normalized;
         }
       }
 
-      lines.push("");
-      lines.push("Submitted from AmericanDevCorp.com iOS App Submission Service.");
-      return lines.join("\n");
+      return output;
     }
 
-    document.querySelectorAll("[data-mail-form]").forEach((form) => {
-      form.addEventListener("submit", (event) => {
-        event.preventDefault();
-        const subject = form.dataset.subject || "American Dev Corp service request";
-        const body = formDataToBody(form);
-        const href = `mailto:${intakeEmail}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
-        window.location.href = href;
-        window.setTimeout(() => {
-          document.getElementById("successWall").classList.remove("hidden");
-          document.body.classList.add("has-success-wall");
-          window.scrollTo({ top: 0, behavior: "smooth" });
-        }, 700);
+    async function postJSON(url, payload) {
+      const response = await fetch(url, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(payload)
       });
+      const data = await response.json().catch(() => ({}));
+      if (!response.ok) {
+        throw new Error(data.error || "Request failed.");
+      }
+      return data;
+    }
+
+    function showSuccess(title, message) {
+      document.querySelector("#successWall h1").textContent = title;
+      document.querySelector("#successWall .lead").textContent = message;
+      document.getElementById("successWall").classList.remove("hidden");
+      document.body.classList.add("has-success-wall");
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    document.getElementById("requestForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const status = document.getElementById("requestStatus");
+      status.textContent = "Submitting request...";
+
+      try {
+        await postJSON("/api/intake/request", formToObject(event.currentTarget));
+        showSuccess(
+          "Message successfully sent.",
+          "Thank you for requesting iOS App Submission Service support. Someone from the American Dev Corp team will reach back to you as soon as possible."
+        );
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    });
+
+    document.getElementById("codeForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const status = document.getElementById("codeStatus");
+      status.textContent = "Checking access code...";
+
+      try {
+        const result = await postJSON("/api/intake/code", formToObject(form));
+        const application = document.getElementById("applicationIntake");
+        const applicationForm = document.getElementById("applicationForm");
+
+        applicationForm.elements.requestId.value = result.requestId;
+        applicationForm.elements.code.value = result.code;
+
+        for (const [key, value] of Object.entries(result.prefill || {})) {
+          if (applicationForm.elements[key]) {
+            applicationForm.elements[key].value = value;
+          }
+        }
+
+        application.classList.remove("hidden");
+        status.textContent = "Access approved. Complete the application intake below.";
+        application.scrollIntoView({ behavior: "smooth", block: "start" });
+      } catch (error) {
+        status.textContent = error.message;
+      }
+    });
+
+    document.getElementById("applicationForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const status = document.getElementById("applicationStatus");
+      status.textContent = "Submitting application intake...";
+
+      try {
+        await postJSON("/api/intake/application", {
+          requestId: form.elements.requestId.value,
+          code: form.elements.code.value,
+          fields: formToObject(form)
+        });
+        showSuccess(
+          "Application intake submitted.",
+          "Thank you. Your detailed application intake was received by American Dev Corp and will be reviewed in the application submissions inbox."
+        );
+      } catch (error) {
+        status.textContent = error.message;
+      }
     });
   </script>
 </body>
