@@ -68,6 +68,15 @@ a {
   text-decoration: none;
 }
 
+.footer-sign-in {
+  border: 0;
+  padding: 0;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+  font: inherit;
+}
+
 .hero {
   padding: 5rem 0 3rem;
 }
@@ -333,6 +342,10 @@ button.button {
   margin: 0;
 }
 
+.form-status[data-error="true"] {
+  color: #9f2f20;
+}
+
 .hidden {
   display: none;
 }
@@ -452,6 +465,64 @@ button.button {
 .button:disabled {
   cursor: not-allowed;
   opacity: 0.55;
+}
+
+.sign-in-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  display: grid;
+  place-items: center;
+  padding: 1rem;
+  background: rgba(29, 29, 27, 0.42);
+}
+
+.sign-in-modal.hidden {
+  display: none;
+}
+
+.sign-in-dialog {
+  position: relative;
+  width: min(430px, 100%);
+  padding: 1.25rem;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--surface);
+  box-shadow: 0 24px 70px rgba(48, 44, 38, 0.18);
+}
+
+.sign-in-close {
+  position: absolute;
+  top: 0.75rem;
+  right: 0.8rem;
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font: 1.6rem/1 Georgia, "Times New Roman", serif;
+}
+
+.sign-in-form {
+  display: grid;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+
+.sign-in-form label {
+  display: grid;
+  gap: 0.35rem;
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.sign-in-form input {
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 0.75rem 0.8rem;
+  background: #fff;
+  color: var(--ink);
+  font: 1rem/1.4 Georgia, "Times New Roman", serif;
 }
 
 .prose {

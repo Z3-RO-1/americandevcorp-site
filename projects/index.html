@@ -63,10 +63,120 @@
         <strong>American Dev Corp</strong>
       </div>
       <div>
+        <button class="footer-sign-in" type="button" data-open-sign-in>Sign in</button>
         <a href="/policies/">Policies</a>
         <a href="/research/">Research</a>
       </div>
     </div>
   </footer>
+
+  <div class="sign-in-modal hidden" data-sign-in-modal>
+    <div class="sign-in-dialog" role="dialog" aria-modal="true" aria-labelledby="sign-in-title">
+      <button class="sign-in-close" type="button" aria-label="Close sign in" data-close-sign-in>&times;</button>
+      <p class="eyebrow">Private access</p>
+      <h2 id="sign-in-title">Sign in</h2>
+      <p class="form-note">Enter your email and use the 6-digit verification code sent to your inbox.</p>
+
+      <form class="sign-in-form" data-sign-in-form>
+        <label>
+          Email
+          <input type="email" name="email" autocomplete="email" required placeholder="you@example.com">
+        </label>
+        <button class="button" type="submit">Send code</button>
+      </form>
+
+      <form class="sign-in-form hidden" data-code-form>
+        <label>
+          6-digit code
+          <input type="text" name="code" inputmode="numeric" autocomplete="one-time-code" maxlength="6" pattern="[0-9]{6}" required placeholder="000000">
+        </label>
+        <button class="button" type="submit">Verify</button>
+      </form>
+
+      <p class="form-status" data-sign-in-status></p>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      const modal = document.querySelector("[data-sign-in-modal]");
+      const openButton = document.querySelector("[data-open-sign-in]");
+      const closeButton = document.querySelector("[data-close-sign-in]");
+      const emailForm = document.querySelector("[data-sign-in-form]");
+      const codeForm = document.querySelector("[data-code-form]");
+      const status = document.querySelector("[data-sign-in-status]");
+      let activeEmail = "";
+
+      function setStatus(message, isError = false) {
+        status.textContent = message;
+        status.dataset.error = isError ? "true" : "false";
+      }
+
+      function openModal() {
+        modal.classList.remove("hidden");
+        setStatus("");
+        emailForm.email.focus();
+      }
+
+      function closeModal() {
+        modal.classList.add("hidden");
+      }
+
+      async function postJSON(url, body) {
+        const response = await fetch(url, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(body)
+        });
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(data.error || "Something went wrong.");
+        return data;
+      }
+
+      openButton.addEventListener("click", openModal);
+      closeButton.addEventListener("click", closeModal);
+      modal.addEventListener("click", (event) => {
+        if (event.target === modal) closeModal();
+      });
+
+      emailForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        activeEmail = emailForm.email.value.trim();
+        emailForm.querySelector("button").disabled = true;
+        setStatus("Sending code...");
+
+        try {
+          await postJSON("/api/sign-in/code", { email: activeEmail });
+          emailForm.classList.add("hidden");
+          codeForm.classList.remove("hidden");
+          codeForm.code.focus();
+          setStatus("Code sent. Check your email.");
+        } catch (error) {
+          setStatus(error.message, true);
+        } finally {
+          emailForm.querySelector("button").disabled = false;
+        }
+      });
+
+      codeForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        codeForm.querySelector("button").disabled = true;
+        setStatus("Verifying...");
+
+        try {
+          await postJSON("/api/sign-in/verify", {
+            email: activeEmail,
+            code: codeForm.code.value
+          });
+          setStatus("Signed in.");
+          setTimeout(closeModal, 650);
+        } catch (error) {
+          setStatus(error.message, true);
+        } finally {
+          codeForm.querySelector("button").disabled = false;
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
