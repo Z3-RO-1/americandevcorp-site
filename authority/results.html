@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Saved App Store Worksheets | American Dev Corp</title>
+  <meta name="description" content="Saved local App Store submission worksheets.">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="authority-app is-loading">
+  <div class="authority-loader" aria-live="polite">
+    <div class="loader-mark" aria-hidden="true">
+      <span></span>
+    </div>
+    <p>Authority Console</p>
+    <small>Opening local files</small>
+  </div>
+  <noscript><style>.authority-loader{display:none}</style></noscript>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">Authority Console</a>
+      <nav class="nav">
+        <a href="intake.html">Intake</a>
+        <a href="results.html">Results</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="wrap authority-shell">
+      <div class="admin-header">
+        <div>
+          <p class="eyebrow">Local results</p>
+          <h1>Saved worksheets</h1>
+        </div>
+        <a class="button" href="intake.html">New worksheet</a>
+      </div>
+
+      <section class="authority-toolbar">
+        <label>
+          Search
+          <input data-authority-search placeholder="Search app name, bundle ID, notes, or metadata">
+        </label>
+        <label>
+          Status
+          <select data-authority-filter>
+            <option value="All">All</option>
+            <option value="Preparing metadata">Preparing metadata</option>
+            <option value="Build uploaded">Build uploaded</option>
+            <option value="Ready to add for review">Ready to add for review</option>
+            <option value="Submitted">Submitted</option>
+            <option value="Rejected / needs fixes">Rejected / needs fixes</option>
+          </select>
+        </label>
+        <button class="button button-secondary" type="button" data-authority-export>Export JSON</button>
+      </section>
+
+      <p class="form-note">Each worksheet opens like a local file. Open one to review it locked, then turn on Edit to autosave changes with history.</p>
+      <section class="authority-dashboard" data-authority-dashboard></section>
+      <section class="authority-results" data-authority-results></section>
+      <p class="form-status" data-authority-status></p>
+    </div>
+  </main>
+
+  <script src="local-authority.js"></script>
+</body>
+</html>

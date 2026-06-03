@@ -123,12 +123,21 @@
       }
 
       async function postJSON(url, body) {
-        const response = await fetch(url, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(body)
-        });
-        const data = await response.json().catch(() => ({}));
+        let response;
+        try {
+          response = await fetch(url, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(body)
+          });
+        } catch {
+          throw new Error("The sign-in backend is not reachable. Open the Netlify site, not a file or GitHub Pages preview.");
+        }
+
+        const data = await response.json().catch(() => null);
+        if (!data) {
+          throw new Error("The sign-in backend is not active on this site. Deploy this through Netlify Functions.");
+        }
         if (!response.ok) throw new Error(data.error || "Something went wrong.");
         return data;
       }

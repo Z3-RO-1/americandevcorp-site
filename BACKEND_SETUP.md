@@ -12,6 +12,7 @@ Set these variables in the deployment provider:
 
 - `ADMIN_PASSWORD`: private password for `/admin/`
 - `ADMIN_SESSION_SECRET`: long random secret used to sign the admin session cookie
+- `USER_SESSION_SECRET`: long random secret used to sign the private user sign-in cookie
 - `RESEND_API_KEY`: API key used by the backend to send email
 - `FROM_EMAIL`: verified sender, for example `American Dev Corp <noreply@americandevcorp.com>`
 

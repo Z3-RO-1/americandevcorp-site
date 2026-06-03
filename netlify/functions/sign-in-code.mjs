@@ -3,6 +3,7 @@ import { json, readJSON } from "./_shared/json.mjs";
 import { signInCodeStore } from "./_shared/storage.mjs";
 
 const codeLifetimeMs = 1000 * 60 * 10;
+const allowedEmail = "gilbert.aguirre.office@gmail.com";
 
 function normalizeEmail(email) {
   return String(email || "").trim().toLowerCase();
@@ -32,6 +33,9 @@ export default async (req) => {
   if (!isValidEmail(email)) {
     return json({ error: "Enter a valid email address." }, { status: 400 });
   }
+  if (email !== allowedEmail) {
+    return json({ error: "This email is not authorized." }, { status: 403 });
+  }
 
   const code = makeCode();
   const codeHash = await digest(`${email}:${code}`);
@@ -45,7 +49,7 @@ export default async (req) => {
     createdAt: new Date().toISOString()
   });
 
-  await sendEmail({
+  const emailResult = await sendEmail({
     to: email,
     subject: "Your American Dev Corp sign-in code",
     text: [
@@ -56,6 +60,11 @@ export default async (req) => {
       "This code expires in 10 minutes. If you did not request it, you can ignore this email."
     ].join("\n")
   });
+
+  if (!emailResult.sent) {
+    await signInCodeStore().delete(email);
+    return json({ error: "Email delivery is not configured on the server." }, { status: 503 });
+  }
 
   return json({ ok: true, message: "Code sent." });
 };

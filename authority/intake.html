@@ -1,0 +1,531 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>App Store Submission Worksheet | American Dev Corp</title>
+  <meta name="description" content="Local-only App Store submission worksheet.">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="authority-app is-loading">
+  <div class="authority-loader" aria-live="polite">
+    <div class="loader-mark" aria-hidden="true">
+      <span></span>
+    </div>
+    <p>Authority Console</p>
+    <small>Preparing worksheet</small>
+  </div>
+  <noscript><style>.authority-loader{display:none}</style></noscript>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="index.html">Authority Console</a>
+      <nav class="nav">
+        <a href="intake.html">Intake</a>
+        <a href="results.html">Results</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="wrap authority-shell">
+      <div class="admin-header">
+        <div>
+          <p class="eyebrow">Local worksheet</p>
+          <h1 data-authority-title>App Store submission intake</h1>
+        </div>
+        <div class="authority-file-actions">
+          <a class="button button-secondary" href="results.html">Saved worksheets</a>
+          <label class="edit-toggle hidden" data-edit-toggle-wrap>
+            <input type="checkbox" data-edit-toggle>
+            Edit
+          </label>
+        </div>
+      </div>
+
+      <form class="intake-form authority-form" data-authority-intake>
+        <p class="form-note">
+          Complete this from top to bottom before opening App Store Connect. The saved result keeps this exact section order so you can copy each answer into Apple’s submission screens without hunting through notes.
+        </p>
+
+        <section class="submission-readiness" data-readiness-panel>
+          <div>
+            <p class="kicker">Submission readiness</p>
+            <strong data-readiness-score>0%</strong>
+            <span data-readiness-summary>Complete the required fields to calculate readiness.</span>
+          </div>
+          <div class="readiness-meter" aria-hidden="true">
+            <span data-readiness-bar></span>
+          </div>
+          <div class="readiness-checks" data-readiness-checks></div>
+        </section>
+
+        <nav class="section-jump" aria-label="Worksheet sections" data-section-jump></nav>
+
+        <fieldset data-section="1. Submission Owner">
+          <legend>1. Submission Owner</legend>
+          <label>
+            App owner name
+            <input name="App owner name" required autocomplete="name">
+          </label>
+          <label>
+            Owner email
+            <input name="Owner email" type="email" required autocomplete="email">
+          </label>
+          <label>
+            Apple Developer account holder
+            <input name="Apple Developer account holder" placeholder="Person or organization name">
+          </label>
+          <label>
+            Apple Developer Team ID
+            <input name="Apple Developer Team ID" placeholder="Optional, if known">
+          </label>
+          <label>
+            App Store Connect access role
+            <select name="App Store Connect access role">
+              <option>Account Holder</option>
+              <option>Admin</option>
+              <option>App Manager</option>
+              <option>Developer</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label>
+            Internal project folder or repo
+            <input name="Internal project folder or repo" placeholder="Local folder path or GitHub repository URL for this app project">
+          </label>
+        </fieldset>
+
+        <fieldset data-section="2. App Record">
+          <legend>2. App Record</legend>
+          <label>
+            App name
+            <input name="App name" maxlength="30" required placeholder="30 characters max">
+          </label>
+          <label>
+            Subtitle
+            <input name="Subtitle" maxlength="30" placeholder="30 characters max">
+          </label>
+          <label>
+            Primary language
+            <select name="Primary language">
+              <option>English (U.S.)</option>
+              <option>English (U.K.)</option>
+              <option>Spanish</option>
+              <option>French</option>
+              <option>German</option>
+              <option>Portuguese</option>
+              <option>Japanese</option>
+              <option>Korean</option>
+              <option>Chinese (Simplified)</option>
+              <option>Chinese (Traditional)</option>
+              <option>Other / confirm in App Store Connect</option>
+            </select>
+          </label>
+          <label>
+            Bundle ID
+            <input name="Bundle ID" required placeholder="com.company.app">
+          </label>
+          <label>
+            SKU
+            <input name="SKU" required placeholder="Internal unique ID">
+          </label>
+          <label>
+            Apple ID
+            <input name="Apple ID" placeholder="Generated by Apple after app record exists">
+          </label>
+          <label>
+            Primary category
+            <select name="Primary category" required>
+              <option value="">Select category</option>
+              <option>Books</option>
+              <option>Business</option>
+              <option>Developer Tools</option>
+              <option>Education</option>
+              <option>Entertainment</option>
+              <option>Finance</option>
+              <option>Food & Drink</option>
+              <option>Games</option>
+              <option>Graphics & Design</option>
+              <option>Health & Fitness</option>
+              <option>Lifestyle</option>
+              <option>Medical</option>
+              <option>Music</option>
+              <option>Navigation</option>
+              <option>News</option>
+              <option>Photo & Video</option>
+              <option>Productivity</option>
+              <option>Reference</option>
+              <option>Shopping</option>
+              <option>Social Networking</option>
+              <option>Sports</option>
+              <option>Travel</option>
+              <option>Utilities</option>
+              <option>Weather</option>
+            </select>
+          </label>
+          <label>
+            Secondary category
+            <select name="Secondary category">
+              <option value="">None</option>
+              <option>Books</option>
+              <option>Business</option>
+              <option>Developer Tools</option>
+              <option>Education</option>
+              <option>Entertainment</option>
+              <option>Finance</option>
+              <option>Food & Drink</option>
+              <option>Games</option>
+              <option>Graphics & Design</option>
+              <option>Health & Fitness</option>
+              <option>Lifestyle</option>
+              <option>Medical</option>
+              <option>Music</option>
+              <option>Navigation</option>
+              <option>News</option>
+              <option>Photo & Video</option>
+              <option>Productivity</option>
+              <option>Reference</option>
+              <option>Shopping</option>
+              <option>Social Networking</option>
+              <option>Sports</option>
+              <option>Travel</option>
+              <option>Utilities</option>
+              <option>Weather</option>
+            </select>
+          </label>
+          <label>
+            Copyright
+            <input name="Copyright" placeholder="2026 American Dev Corp">
+          </label>
+          <label>
+            Content rights
+            <select name="Content rights">
+              <option>I own or have rights to all app content</option>
+              <option>App uses third-party content with permission</option>
+              <option>Unsure / needs review</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset data-section="3. Version Information">
+          <legend>3. Version Information</legend>
+          <label>
+            Version number
+            <input name="Version number" required placeholder="1.0">
+          </label>
+          <label>
+            Build number
+            <input name="Build number" placeholder="From Xcode / App Store Connect">
+          </label>
+          <label class="form-wide">
+            Promotional text
+            <textarea name="Promotional text" rows="3" placeholder="Optional short text shown above the description."></textarea>
+          </label>
+          <label class="form-wide">
+            Description
+            <textarea name="Description" rows="8" required placeholder="Full App Store product description."></textarea>
+          </label>
+          <label>
+            Keywords
+            <input name="Keywords" placeholder="Comma-separated, 100 characters max">
+          </label>
+          <label>
+            Support URL
+            <input name="Support URL" type="url" required placeholder="Public support page URL for customer help, contact, or troubleshooting">
+          </label>
+          <label>
+            Marketing URL
+            <input name="Marketing URL" type="url" placeholder="Optional public product or landing page URL for this app">
+          </label>
+          <label>
+            Privacy Policy URL
+            <input name="Privacy Policy URL" type="url" required placeholder="Public privacy policy URL that explains this app's data practices">
+          </label>
+          <label class="form-wide">
+            What’s New
+            <textarea name="What's New" rows="3" placeholder="Required for updates after the first release."></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset data-section="4. Screenshots and Assets">
+          <legend>4. Screenshots and Assets</legend>
+          <label class="form-wide">
+            App icon location
+            <textarea name="App icon location" rows="2" placeholder="File path or asset folder location."></textarea>
+          </label>
+          <label class="form-wide">
+            Preview and screenshot asset folder
+            <textarea name="Preview and screenshot asset folder" rows="5" placeholder="Create one folder with subfolders: app-preview-1, app-preview-2, app-preview-3, screenshot-1 through screenshot-10. App previews: up to 3. Screenshots: up to 10."></textarea>
+          </label>
+          <label class="form-wide">
+            iPhone screenshot locations
+            <textarea name="iPhone screenshot locations" rows="4" placeholder="Use screenshot-1 through screenshot-10. Add file names, local paths, or Drive links for each filled slot."></textarea>
+          </label>
+          <label class="form-wide">
+            App preview video locations
+            <textarea name="Preview video locations" rows="3" placeholder="Optional. Use app-preview-1 through app-preview-3 for up to 3 App Preview videos."></textarea>
+          </label>
+          <label class="form-wide">
+            iPad screenshot locations
+            <textarea name="iPad screenshot locations" rows="3" placeholder="If supporting iPad, use screenshot-1 through screenshot-10 for the iPad asset set too."></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset data-section="5. Build and TestFlight">
+          <legend>5. Build and TestFlight</legend>
+          <label>
+            Xcode project path
+            <input name="Xcode project path" placeholder="/Users/.../App.xcodeproj">
+          </label>
+          <label>
+            Scheme
+            <input name="Scheme">
+          </label>
+          <label>
+            Minimum iOS version
+            <input name="Minimum iOS version" placeholder="Example: iOS 17.0">
+          </label>
+          <label>
+            Supported devices
+            <select name="Supported devices">
+              <option>iPhone only</option>
+              <option>iPhone and iPad</option>
+              <option>iPad only</option>
+              <option>Other / unsure</option>
+            </select>
+          </label>
+          <label class="form-wide">
+            Build upload notes
+            <textarea name="Build upload notes" rows="4" placeholder="Archive/export notes, upload status, errors, or TestFlight notes."></textarea>
+          </label>
+          <label>
+            Build selected in App Store Connect?
+            <select name="Build selected in App Store Connect">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label>
+            Uses encryption?
+            <select name="Uses encryption">
+              <option>No encryption beyond Apple standard libraries</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+        </fieldset>
+
+        <fieldset data-section="6. App Review Information">
+          <legend>6. App Review Information</legend>
+          <label>
+            Sign-in required for reviewer?
+            <select name="Sign-in required for reviewer">
+              <option>No</option>
+              <option>Yes</option>
+            </select>
+          </label>
+          <label>
+            Review username
+            <input name="Review username" autocomplete="off">
+          </label>
+          <label>
+            Review password
+            <input name="Review password" autocomplete="off">
+          </label>
+          <div class="form-subsection form-wide">App Review Contact</div>
+          <label>
+            First name
+            <input name="Contact first name">
+          </label>
+          <label>
+            Last name
+            <input name="Contact last name">
+          </label>
+          <label>
+            Email
+            <input name="Contact email" type="email">
+          </label>
+          <label>
+            Phone number
+            <input name="Contact phone" type="tel">
+          </label>
+          <label class="form-wide">
+            Review notes
+            <textarea name="Review notes" rows="5" placeholder="Explain how to test the app, special flows, demo account context, or hardware requirements."></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset data-section="7. Privacy">
+          <legend>7. Privacy</legend>
+          <label>
+            App collects user data?
+            <select name="App collects user data">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label>
+            Uses third-party SDKs?
+            <select name="Uses third-party SDKs">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label class="form-wide">
+            Data types collected
+            <textarea name="Data types collected" rows="5" placeholder="Contact info, identifiers, location, purchases, diagnostics, usage data, user content, etc."></textarea>
+          </label>
+          <label class="form-wide">
+            Data use purpose
+            <textarea name="Data use purpose" rows="4" placeholder="App functionality, analytics, advertising, personalization, account management, etc."></textarea>
+          </label>
+          <label>
+            Tracking users across apps/sites?
+            <select name="Tracking users across apps/sites">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label>
+            User privacy choices URL
+            <input name="User privacy choices URL" type="url" placeholder="Optional URL where users can manage privacy choices or data requests">
+          </label>
+        </fieldset>
+
+        <fieldset data-section="8. Age Rating and Content">
+          <legend>8. Age Rating and Content</legend>
+          <label>
+            Made for Kids?
+            <select name="Made for Kids">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label>
+            Contains user-generated content?
+            <select name="Contains user-generated content">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label>
+            Has unrestricted web access?
+            <select name="Has unrestricted web access">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label>
+            Contains ads?
+            <select name="Contains ads">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label class="form-wide">
+            Content rating notes
+            <textarea name="Content rating notes" rows="5" placeholder="Violence, medical content, gambling, mature themes, alcohol/tobacco/drugs, contests, web access, or safety controls."></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset data-section="9. Pricing and Availability">
+          <legend>9. Pricing and Availability</legend>
+          <label>
+            Price
+            <select name="Price">
+              <option>Free</option>
+              <option>Paid tier selected in App Store Connect</option>
+              <option>Unsure / needs pricing setup</option>
+            </select>
+          </label>
+          <label>
+            Availability
+            <select name="Availability">
+              <option>All countries or regions</option>
+              <option>Selected countries or regions</option>
+              <option>Unsure / needs availability setup</option>
+            </select>
+          </label>
+          <label>
+            In-app purchases?
+            <select name="In-app purchases">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Planned later</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label>
+            Subscriptions?
+            <select name="Subscriptions">
+              <option>No</option>
+              <option>Yes</option>
+              <option>Planned later</option>
+              <option>Unsure</option>
+            </select>
+          </label>
+          <label class="form-wide">
+            Monetization notes
+            <textarea name="Monetization notes" rows="4" placeholder="Paid features, subscriptions, external purchases, ads, or no monetization."></textarea>
+          </label>
+        </fieldset>
+
+        <fieldset data-section="10. Release and Submission">
+          <legend>10. Release and Submission</legend>
+          <label>
+            Release preference
+            <select name="Release preference" required>
+              <option value="">Select release preference</option>
+              <option>Manually release after approval</option>
+              <option>Automatically release after approval</option>
+              <option>Automatically release no earlier than date/time</option>
+            </select>
+          </label>
+          <label>
+            Earliest release date/time
+            <input name="Earliest release date/time" placeholder="Optional">
+          </label>
+          <label>
+            Submission status
+            <select name="Submission status">
+              <option>Preparing metadata</option>
+              <option>Build uploaded</option>
+              <option>Ready to add for review</option>
+              <option>Submitted</option>
+              <option>Rejected / needs fixes</option>
+            </select>
+          </label>
+          <label class="form-wide">
+            Known blockers or missing items
+            <textarea name="Known blockers or missing items" rows="5" placeholder="Anything still missing before clicking Submit for Review."></textarea>
+          </label>
+          <label class="form-wide">
+            Final submission notes
+            <textarea name="Final submission notes" rows="5"></textarea>
+          </label>
+        </fieldset>
+
+        <div class="authority-actions">
+          <button class="button" type="submit" data-save-button>Save worksheet</button>
+          <button class="button button-secondary" type="reset" data-clear-button>Clear</button>
+          <button class="button button-secondary hidden" type="button" data-history-prev>&lt;</button>
+          <button class="button button-secondary hidden" type="button" data-history-next>&gt;</button>
+          <button class="button button-secondary hidden" type="button" data-history-restore>Replace with viewed version</button>
+          <span class="status-pill hidden" data-history-label></span>
+          <p class="form-status" data-authority-status></p>
+        </div>
+      </form>
+    </div>
+  </main>
+
+  <script src="local-authority.js"></script>
+</body>
+</html>

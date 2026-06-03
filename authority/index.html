@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Authority Console | American Dev Corp</title>
+  <meta name="description" content="Local-only authority console for intake and results.">
+  <link rel="stylesheet" href="../styles.css">
+</head>
+<body class="authority-app is-loading">
+  <div class="authority-loader" aria-live="polite">
+    <div class="loader-mark" aria-hidden="true">
+      <span></span>
+    </div>
+    <p>Authority Console</p>
+    <small>Preparing local workspace</small>
+  </div>
+  <noscript><style>.authority-loader{display:none}</style></noscript>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="intake.html">Intake</a>
+        <a href="results.html">Results</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="wrap authority-shell">
+      <section class="authority-hero">
+        <p class="eyebrow">Local authority</p>
+        <h1>Authority Console</h1>
+        <p class="lede">A local-only intake and results app. Records are saved in this browser on this device, with no account system, API key, or server-side database.</p>
+        <div class="actions">
+          <a class="button" href="intake.html">Open intake</a>
+          <a class="button button-secondary" href="results.html">View results</a>
+        </div>
+      </section>
+
+      <section class="authority-note">
+        <strong>Storage boundary</strong>
+        <p>This app keeps records in local browser storage. It avoids network login risk, but anyone with access to this browser profile may be able to see the saved records.</p>
+      </section>
+    </div>
+  </main>
+  <script src="local-authority.js"></script>
+</body>
+</html>

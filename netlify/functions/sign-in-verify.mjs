@@ -2,6 +2,7 @@ import { json, readJSON } from "./_shared/json.mjs";
 import { signInCodeStore } from "./_shared/storage.mjs";
 
 const encoder = new TextEncoder();
+const allowedEmail = "gilbert.aguirre.office@gmail.com";
 
 function env(name) {
   return Netlify.env.get(name);
@@ -62,6 +63,9 @@ export default async (req) => {
 
   if (!email || code.length !== 6) {
     return json({ error: "Enter the 6-digit code." }, { status: 400 });
+  }
+  if (email !== allowedEmail) {
+    return json({ error: "This email is not authorized." }, { status: 403 });
   }
 
   const store = signInCodeStore();
