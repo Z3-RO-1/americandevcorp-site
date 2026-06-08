@@ -66,6 +66,24 @@ export function adminApplicationEmail(record) {
   };
 }
 
+export function adminMarketDirectoryEmail(record) {
+  const readableType = String(record.endpoint || "market-directory").replaceAll("-", " ");
+
+  return {
+    to: adminEmail,
+    subject: `The Market Directory ${readableType}: ${record.title || record.id}`,
+    text: [
+      "A new The Market Directory beta event was submitted.",
+      "",
+      `Record ID: ${record.id}`,
+      `Type: ${record.endpoint}`,
+      `Submitted: ${record.createdAt}`,
+      "",
+      ...Object.entries(record.payload || {}).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : value}`)
+    ].join("\n")
+  };
+}
+
 export function approvalEmail({ name, appName, code }) {
   return {
     subject: `American Dev Corp approval for ${appName || "your iOS app"}`,
