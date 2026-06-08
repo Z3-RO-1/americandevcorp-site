@@ -65,6 +65,26 @@ enum SubmissionSchema {
             ],
             children: [
                 SubmissionSection(
+                    id: "aiSourceContext",
+                    title: "AI Source Context",
+                    subtitle: "Internal source record for the project/build the AI import used to prepare this worksheet.",
+                    fields: [
+                        .init(id: "aiName", title: "AI System"),
+                        .init(id: "repoURL", title: "Repository URL"),
+                        .init(id: "repoBranch", title: "Repository Branch"),
+                        .init(id: "repoImportSummary", title: "Repo Import Summary", kind: .longText),
+                        .init(id: "repoImportProvenance", title: "Repo Import Provenance", kind: .longText),
+                        .init(id: "buildProjectPath", title: "Project or Build Path", kind: .file),
+                        .init(id: "buildScheme", title: "Scheme"),
+                        .init(id: "buildConfiguration", title: "Build Configuration"),
+                        .init(id: "buildDisplayName", title: "Display Name"),
+                        .init(id: "buildBundleID", title: "Bundle ID"),
+                        .init(id: "buildVersion", title: "Version"),
+                        .init(id: "buildNumber", title: "Build Number"),
+                        .init(id: "aiImportNotes", title: "AI Import Notes", kind: .longText)
+                    ]
+                ),
+                SubmissionSection(
                     id: "reviewInfo",
                     title: "App Review Information",
                     fields: [],

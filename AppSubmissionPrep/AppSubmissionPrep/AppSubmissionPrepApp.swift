@@ -1,7 +1,7 @@
 import SwiftUI
 
 @main
-struct AuthorityConnectApp: App {
+struct AppSubmissionPrepApp: App {
     @StateObject private var store = SubmissionStore()
 
     var body: some Scene {

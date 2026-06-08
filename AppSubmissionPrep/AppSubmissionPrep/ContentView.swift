@@ -1,4 +1,5 @@
 import SwiftUI
+import UIKit
 
 struct ContentView: View {
     @EnvironmentObject private var store: SubmissionStore
@@ -8,6 +9,8 @@ struct ContentView: View {
     @State private var renameTarget: SubmissionWorksheet?
     @State private var renameText = ""
     @State private var deleteTarget: SubmissionWorksheet?
+    @State private var exportedLongForm: ExportedLongFormFile?
+    @State private var exportErrorMessage = ""
 
     var body: some View {
         ZStack {
@@ -47,6 +50,14 @@ struct ContentView: View {
                 }
                 .navigationTitle("Apps")
                 .toolbar {
+                    if let selectedWorksheet {
+                        Button {
+                            exportLongForm(selectedWorksheet)
+                        } label: {
+                            Label("Export", systemImage: "doc.richtext")
+                        }
+                    }
+
                     Button {
                         let worksheet = store.createWorksheet()
                         selectedID = worksheet.id
@@ -68,6 +79,16 @@ struct ContentView: View {
             .sheet(isPresented: $showAccountConfiguration) {
                 AccountConfigurationView()
                     .environmentObject(store)
+            }
+            .sheet(item: $exportedLongForm) { export in
+                ActivityView(activityItems: [export.url])
+            }
+            .alert("Export Failed", isPresented: exportErrorBinding) {
+                Button("OK", role: .cancel) {
+                    exportErrorMessage = ""
+                }
+            } message: {
+                Text(exportErrorMessage)
             }
             .alert("Rename App", isPresented: renameAlertBinding) {
                 TextField("App name", text: $renameText)
@@ -146,27 +167,30 @@ struct ContentView: View {
                 Label("Share", systemImage: "square.and.arrow.up")
             }
 
-            Menu {
-                ShareLink(item: aiShareText(for: worksheet, agentName: "Codex")) {
-                    Label("Codex", systemImage: "terminal")
-                }
-                ShareLink(item: aiShareText(for: worksheet, agentName: "ChatGPT")) {
-                    Label("ChatGPT", systemImage: "bubble.left.and.bubble.right")
-                }
-                ShareLink(item: aiShareText(for: worksheet, agentName: "Claude")) {
-                    Label("Claude", systemImage: "text.bubble")
-                }
-                ShareLink(item: aiShareText(for: worksheet, agentName: "Gemini")) {
-                    Label("Gemini", systemImage: "sparkles")
-                }
+            Button {
+                exportLongForm(worksheet)
             } label: {
-                Label("Share to AI", systemImage: "brain.head.profile")
+                Label("Export Long Form", systemImage: "doc.richtext")
+            }
+
+            ShareLink(item: aiShareText(for: worksheet)) {
+                Label("Share for AI Review", systemImage: "brain.head.profile")
             }
 
             Button(role: .destructive) {
                 deleteTarget = worksheet
             } label: {
                 Label("Delete", systemImage: "trash")
+            }
+        }
+    }
+
+    private var exportErrorBinding: Binding<Bool> {
+        Binding {
+            !exportErrorMessage.isEmpty
+        } set: { isPresented in
+            if !isPresented {
+                exportErrorMessage = ""
             }
         }
     }
@@ -201,9 +225,18 @@ struct ContentView: View {
         renameText = ""
     }
 
-    private func aiShareText(for worksheet: SubmissionWorksheet, agentName: String) -> String {
+    private func exportLongForm(_ worksheet: SubmissionWorksheet) {
+        do {
+            let url = try store.exportLongFormHTMLFile(for: worksheet)
+            exportedLongForm = ExportedLongFormFile(url: url)
+        } catch {
+            exportErrorMessage = error.localizedDescription
+        }
+    }
+
+    private func aiShareText(for worksheet: SubmissionWorksheet) -> String {
         """
-        \(agentName), review this App Store submission worksheet from Authority Connect. Identify missing, inconsistent, risky, or confusing fields, then return a hardened correction plan.
+        Review this App Store submission worksheet from App Submission Prep. Identify missing, inconsistent, risky, or confusing fields, then return a hardened correction plan.
 
         \(store.exportText(for: worksheet))
         """
@@ -232,6 +265,21 @@ struct ContentView: View {
         let complete = required.filter { !(worksheet.values[$0.id] ?? "").isEmpty }.count
         return Double(complete) / Double(required.count)
     }
+}
+
+private struct ExportedLongFormFile: Identifiable {
+    let id = UUID()
+    let url: URL
+}
+
+private struct ActivityView: UIViewControllerRepresentable {
+    let activityItems: [Any]
+
+    func makeUIViewController(context: Context) -> UIActivityViewController {
+        UIActivityViewController(activityItems: activityItems, applicationActivities: nil)
+    }
+
+    func updateUIViewController(_ uiViewController: UIActivityViewController, context: Context) {}
 }
 
 private struct AccountConfigurationView: View {
@@ -490,7 +538,7 @@ private struct LaunchScreen: View {
                         .controlSize(.large)
                         .tint(Color(.systemGray))
                 }
-                Text("Authority Connect")
+                Text("App Submission Prep")
                     .font(.title2.weight(.semibold))
                 Text("Preparing App Store submission workspace")
                     .font(.subheadline)

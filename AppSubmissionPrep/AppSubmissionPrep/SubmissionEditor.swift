@@ -6,6 +6,7 @@ struct SubmissionEditor: View {
     @State private var isEditing = true
     @State private var historyIndex: Int?
     @State private var showRejectionAssistant = false
+    @State private var showRepoImport = false
 
     init(worksheet: SubmissionWorksheet) {
         _worksheet = State(initialValue: worksheet)
@@ -30,6 +31,12 @@ struct SubmissionEditor: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
+                Button {
+                    showRepoImport = true
+                } label: {
+                    Label("AI Import", systemImage: "wand.and.stars")
+                }
+
                 Button {
                     showRejectionAssistant = true
                 } label: {
@@ -66,6 +73,10 @@ struct SubmissionEditor: View {
         }
         .sheet(isPresented: $showRejectionAssistant) {
             RejectionAssistantView(worksheet: $worksheet)
+        }
+        .sheet(isPresented: $showRepoImport) {
+            RepoAIImportView(worksheet: $worksheet)
+                .environmentObject(store)
         }
     }
 
@@ -236,6 +247,110 @@ private struct SubmissionSectionView: View {
         case 0: return Color(.secondarySystemGroupedBackground)
         case 1: return Color(.systemBackground)
         default: return Color(.tertiarySystemGroupedBackground)
+        }
+    }
+}
+
+private struct RepoAIImportView: View {
+    @Environment(\.dismiss) private var dismiss
+    @EnvironmentObject private var store: SubmissionStore
+    @Binding var worksheet: SubmissionWorksheet
+    @State private var repoURL = ""
+    @State private var branch = ""
+    @State private var importStatus = ""
+    @State private var isImporting = false
+    @State private var useLocalProfile = false
+
+    var body: some View {
+        NavigationStack {
+            Form {
+                Section {
+                    Text("Import draft answers from a public GitHub repository. The app will inspect source files, fill only justified fields, and record provenance for review.")
+                        .font(.subheadline)
+                        .foregroundStyle(.secondary)
+
+                    TextField("https://github.com/owner/repo", text: $repoURL)
+                        .textInputAutocapitalization(.never)
+                        .keyboardType(.URL)
+                        .autocorrectionDisabled()
+
+                    TextField("Branch optional, e.g. main", text: $branch)
+                        .textInputAutocapitalization(.never)
+                        .autocorrectionDisabled()
+                } header: {
+                    Text("Repo AI Import")
+                }
+
+                Section {
+                    Button {
+                        runImport()
+                    } label: {
+                        if isImporting {
+                            Label("Scanning Repository", systemImage: "arrow.triangle.2.circlepath")
+                        } else {
+                            Label("Run AI Repo Import", systemImage: "wand.and.stars")
+                        }
+                    }
+                    .disabled(repoURL.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty || isImporting)
+
+                    Button {
+                        worksheet = store.refreshAISourceContext(for: worksheet)
+                        importStatus = "Refreshed the registered local build profile for this worksheet."
+                    } label: {
+                        Label("Use Registered Local Profile", systemImage: "desktopcomputer")
+                    }
+                    .disabled(isImporting)
+                }
+
+                if !importStatus.isEmpty {
+                    Section("Status") {
+                        Text(importStatus)
+                            .font(.subheadline)
+                            .foregroundStyle(importStatus.hasPrefix("Could not") ? .red : .secondary)
+                            .fixedSize(horizontal: false, vertical: true)
+                    }
+                }
+
+                Section("Guardrails") {
+                    Label("Public GitHub repos work in this version.", systemImage: "checkmark.seal")
+                    Label("Private repos need a read-only GitHub connection later.", systemImage: "lock")
+                    Label("Nothing is sent to App Store Connect.", systemImage: "hand.raised")
+                }
+                .font(.footnote)
+            }
+            .navigationTitle("AI Import")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+        .onAppear {
+            if repoURL.isEmpty {
+                repoURL = worksheet.values["repoURL", default: ""]
+            }
+            if branch.isEmpty {
+                branch = worksheet.values["repoBranch", default: ""]
+            }
+        }
+    }
+
+    private func runImport() {
+        isImporting = true
+        importStatus = "Scanning repository and preparing draft answers..."
+
+        Task {
+            do {
+                worksheet = try await store.importFromGitHub(repoURL: repoURL, branch: branch, into: worksheet)
+                importStatus = "Import complete. Review the imported fields and provenance before using the answers in App Store Connect."
+            } catch {
+                importStatus = "Could not import this repo: \(error.localizedDescription)"
+            }
+            isImporting = false
         }
     }
 }
@@ -769,7 +884,7 @@ private struct MediaAssetsInput: View {
     private func createFolderTemplate() {
         guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
         let root = documents
-            .appendingPathComponent("AuthorityConnectAssets", isDirectory: true)
+            .appendingPathComponent("AppSubmissionPrepAssets", isDirectory: true)
             .appendingPathComponent(safeFolderName, isDirectory: true)
             .appendingPathComponent("previews-and-screenshots", isDirectory: true)
 
