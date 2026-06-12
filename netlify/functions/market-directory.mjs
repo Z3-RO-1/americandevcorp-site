@@ -9,7 +9,8 @@ const allowedEndpoints = new Set([
   "storefront-review",
   "support-request",
   "host-access-request",
-  "sponsorship-request"
+  "sponsorship-request",
+  "billing-receipt"
 ]);
 
 function endpointFromRequest(req) {
@@ -33,6 +34,8 @@ function titleFor(endpoint, payload) {
       return payload.business_name || payload.email || "Sponsorship request";
     case "host-access-request":
       return payload.business_name || payload.email || "Hosting access request";
+    case "billing-receipt":
+      return payload.business_name || payload.product_id || "Billing receipt";
     default:
       return endpoint;
   }
@@ -62,7 +65,7 @@ export default async (req) => {
 
   await marketDirectoryStore().setJSON(record.id, record);
 
-  if (["support-request", "host-access-request", "sponsorship-request", "storefront-review"].includes(endpoint)) {
+  if (["support-request", "host-access-request", "sponsorship-request", "storefront-review", "billing-receipt"].includes(endpoint)) {
     await sendEmail(adminMarketDirectoryEmail(record));
   }
 

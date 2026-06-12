@@ -48,42 +48,54 @@ enum SubmissionSchema {
         "Weather"
     ]
 
+    static let aiSourceSection = SubmissionSection(
+        id: "aiSourceContext",
+        title: "AI Source Context",
+        subtitle: "Optional source record for the project/build used to prepare this worksheet.",
+        fields: [
+            .init(id: "aiName", title: "AI System"),
+            .init(id: "repoURL", title: "Repository URL"),
+            .init(id: "repoBranch", title: "Repository Branch"),
+            .init(id: "repoImportSummary", title: "Repo Import Summary", kind: .longText),
+            .init(id: "repoImportProvenance", title: "Repo Import Provenance", kind: .longText),
+            .init(id: "buildProjectPath", title: "Project or Build Path", kind: .file),
+            .init(id: "buildScheme", title: "Scheme"),
+            .init(id: "buildConfiguration", title: "Build Configuration"),
+            .init(id: "buildDisplayName", title: "Display Name"),
+            .init(id: "buildBundleID", title: "Bundle ID"),
+            .init(id: "buildVersion", title: "Version"),
+            .init(id: "buildNumber", title: "Build Number"),
+            .init(id: "aiImportNotes", title: "AI Import Notes", kind: .longText)
+        ]
+    )
+
     static let sections: [SubmissionSection] = [
         SubmissionSection(
-            id: "prepare",
-            title: "Prepare for Submission",
-            fields: [
-                .init(id: "previewsScreenshots", title: "Previews and Screenshots", required: true, placeholder: "Asset folder with up to 3 app previews and up to 10 screenshots", kind: .mediaAssets),
-                .init(id: "promotionalText", title: "Promotional Text", placeholder: "Optional, can be edited without a new app version", kind: .longText),
-                .init(id: "description", title: "Description", required: true, placeholder: "Full App Store description", kind: .longText),
-                .init(id: "keywords", title: "Keywords", required: true, placeholder: "Comma-separated, 100 characters max"),
-                .init(id: "supportURL", title: "Support URL", required: true, placeholder: "Public support page URL for customer help, contact, or troubleshooting"),
-                .init(id: "marketingURL", title: "Marketing URL", placeholder: "Optional public product or landing page URL for this app"),
-                .init(id: "version", title: "Version", required: true, placeholder: "1.0"),
-                .init(id: "copyright", title: "Copyright", required: true, isShared: true, placeholder: "2026 Company Name"),
-                .init(id: "routingCoverageFile", title: "Routing App Coverage File", placeholder: "Drive/file link or local path", kind: .file)
-            ],
+            id: "appStoreConnect",
+            title: "App Store Connect",
+            fields: [],
             children: [
                 SubmissionSection(
-                    id: "aiSourceContext",
-                    title: "AI Source Context",
-                    subtitle: "Internal source record for the project/build the AI import used to prepare this worksheet.",
+                    id: "prepare",
+                    title: "Prepare for Submission",
                     fields: [
-                        .init(id: "aiName", title: "AI System"),
-                        .init(id: "repoURL", title: "Repository URL"),
-                        .init(id: "repoBranch", title: "Repository Branch"),
-                        .init(id: "repoImportSummary", title: "Repo Import Summary", kind: .longText),
-                        .init(id: "repoImportProvenance", title: "Repo Import Provenance", kind: .longText),
-                        .init(id: "buildProjectPath", title: "Project or Build Path", kind: .file),
-                        .init(id: "buildScheme", title: "Scheme"),
-                        .init(id: "buildConfiguration", title: "Build Configuration"),
-                        .init(id: "buildDisplayName", title: "Display Name"),
-                        .init(id: "buildBundleID", title: "Bundle ID"),
-                        .init(id: "buildVersion", title: "Version"),
-                        .init(id: "buildNumber", title: "Build Number"),
-                        .init(id: "aiImportNotes", title: "AI Import Notes", kind: .longText)
+                        .init(id: "promotionalText", title: "Promotional Text", placeholder: "Optional, can be edited without a new app version", kind: .longText),
+                        .init(id: "description", title: "Description", required: true, placeholder: "Full App Store description", kind: .longText),
+                        .init(id: "keywords", title: "Keywords", required: true, placeholder: "Comma-separated, 100 characters max"),
+                        .init(id: "supportURL", title: "Support URL", required: true, placeholder: "Public support page URL for customer help, contact, or troubleshooting"),
+                        .init(id: "marketingURL", title: "Marketing URL", placeholder: "Optional public product or landing page URL for this app"),
+                        .init(id: "version", title: "Version", required: true, placeholder: "1.0"),
+                        .init(id: "copyright", title: "Copyright", required: true, isShared: true, placeholder: "2026 Company Name"),
+                        .init(id: "previewsScreenshots", title: "App Screenshots and Previews", required: true, placeholder: "Attach up to 3 app previews and up to 10 screenshots", kind: .mediaAssets)
                     ]
                 ),
+                SubmissionSection(id: "attachBuild", title: "Attach Build (App's Code)", subtitle: "Use this as the live submission checklist while preparing the build in Apple and Xcode.", fields: [
+                    .init(id: "createNewAppStep", title: "1. Create New App", placeholder: "App Store Connect > Apps > New App", kind: .longText),
+                    .init(id: "registerBundleStep", title: "1.2 Register Bundle ID", placeholder: "Build ID > Register a new bundle ID in Certificates, Identifiers & Profiles", kind: .longText),
+                    .init(id: "returnToXcodeStep", title: "1.2.2 Return to Xcode", placeholder: "Go back to Xcode after the identifier is registered", kind: .longText),
+                    .init(id: "xcodeSigningStep", title: "2. Xcode Signing & Capabilities", placeholder: "Folder icon > app build > Signing & Capabilities > Team", kind: .longText),
+                    .init(id: "buildUpload", title: "Uploaded Build", placeholder: "Selected build number / processing status / notes")
+                ]),
                 SubmissionSection(
                     id: "reviewInfo",
                     title: "App Review Information",
@@ -119,27 +131,27 @@ enum SubmissionSchema {
                     title: "App Information",
                     fields: [],
                     children: [
-                        SubmissionSection(id: "developerAccount", title: "Developer Account Profile", fields: [
-                            .init(id: "developerAccountHolder", title: "Apple Developer Account Holder", isShared: true),
-                            .init(id: "developerTeamID", title: "Apple Developer Team ID", isShared: true),
-                            .init(id: "appStoreAccessRole", title: "App Store Connect Access Role", isShared: true, kind: .choice(["Account Holder", "Admin", "App Manager", "Developer", "Unsure"]))
-                        ]),
                         SubmissionSection(id: "localization", title: "Localization Information", fields: [
                             .init(id: "name", title: "Name", required: true),
                             .init(id: "subtitle", title: "Subtitle")
                         ]),
                         SubmissionSection(id: "generalInfo", title: "General Information", fields: [
                             .init(id: "bundleID", title: "Bundle ID", required: true, placeholder: "com.company.app"),
-                            .init(id: "sku", title: "SKU", required: true),
-                            .init(id: "appleID", title: "Apple ID"),
-                            .init(id: "contentRights", title: "Content Rights", required: true, isShared: true, kind: .choice(["Owns or has rights", "Uses third-party content", "Unsure"])),
-                            .init(id: "primaryLanguage", title: "Primary Language", required: true, isShared: true, kind: .choice(languageOptions)),
                             .init(id: "primaryCategory", title: "Category - Primary", required: true, kind: .choice(categoryOptions)),
                             .init(id: "secondaryCategory", title: "Category - Secondary", kind: .choice(["None"] + categoryOptions)),
+                            .init(id: "contentRights", title: "Content Rights", required: true, isShared: true, kind: .choice(["Owns or has rights", "Uses third-party content", "Unsure"])),
                             .init(id: "licenseAgreement", title: "License Agreement", isShared: true, kind: .choice(["Standard Apple License Agreement", "Custom License Agreement"]))
                         ]),
                         SubmissionSection(id: "ageRatings", title: "Age Ratings", fields: [
-                            .init(id: "ageRatingNotes", title: "Age Rating Notes", placeholder: "Content, web access, UGC, ads, medical, gambling, etc.", kind: .longText)
+                            .init(id: "ageRatingNotes", title: "App Age Ratings", placeholder: "Content, web access, UGC, ads, medical, gambling, etc.", kind: .longText)
+                        ]),
+                        SubmissionSection(id: "developerAccount", title: "Developer Account Profile", fields: [
+                            .init(id: "developerAccountHolder", title: "Apple Developer Account Holder", isShared: true),
+                            .init(id: "developerTeamID", title: "Apple Developer Team ID", isShared: true),
+                            .init(id: "appStoreAccessRole", title: "App Store Connect Access Role", isShared: true, kind: .choice(["Account Holder", "Admin", "App Manager", "Developer", "Unsure"])),
+                            .init(id: "primaryLanguage", title: "Primary Language", required: true, isShared: true, kind: .choice(languageOptions)),
+                            .init(id: "sku", title: "SKU", required: true),
+                            .init(id: "appleID", title: "Apple ID")
                         ]),
                         SubmissionSection(id: "encryption", title: "App Encryption Documentation", fields: [
                             .init(id: "encryptionNotes", title: "Encryption Notes", kind: .longText)
@@ -224,7 +236,7 @@ enum SubmissionSchema {
     ]
 
     static var allFields: [SubmissionField] {
-        sections.flatMap(\.allFields)
+        aiSourceSection.allFields + sections.flatMap(\.allFields)
     }
 
     static var requiredFields: [SubmissionField] {

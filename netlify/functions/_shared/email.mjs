@@ -73,7 +73,7 @@ export function adminMarketDirectoryEmail(record) {
     to: adminEmail,
     subject: `The Market Directory ${readableType}: ${record.title || record.id}`,
     text: [
-      "A new The Market Directory beta event was submitted.",
+      "A new The Market Directory event was submitted.",
       "",
       `Record ID: ${record.id}`,
       `Type: ${record.endpoint}`,

@@ -1,4 +1,6 @@
+import PhotosUI
 import SwiftUI
+import UniformTypeIdentifiers
 
 struct SubmissionEditor: View {
     @EnvironmentObject private var store: SubmissionStore
@@ -7,6 +9,7 @@ struct SubmissionEditor: View {
     @State private var historyIndex: Int?
     @State private var showRejectionAssistant = false
     @State private var showRepoImport = false
+    @State private var showAISourceContext = false
 
     init(worksheet: SubmissionWorksheet) {
         _worksheet = State(initialValue: worksheet)
@@ -17,6 +20,7 @@ struct SubmissionEditor: View {
             VStack(alignment: .leading, spacing: 22) {
                 header
                 readinessPanel
+                aiSourcePanel
 
                 ForEach(SubmissionSchema.sections) { section in
                     SubmissionSectionView(section: section, worksheet: $worksheet, level: 0, isEditing: isEditing)
@@ -31,12 +35,6 @@ struct SubmissionEditor: View {
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
             ToolbarItemGroup(placement: .topBarTrailing) {
-                Button {
-                    showRepoImport = true
-                } label: {
-                    Label("AI Import", systemImage: "wand.and.stars")
-                }
-
                 Button {
                     showRejectionAssistant = true
                 } label: {
@@ -131,6 +129,63 @@ struct SubmissionEditor: View {
         }
         .padding()
         .background(Color(.secondarySystemGroupedBackground), in: RoundedRectangle(cornerRadius: 14, style: .continuous))
+    }
+
+    private var aiSourcePanel: some View {
+        DisclosureGroup(isExpanded: $showAISourceContext) {
+            VStack(alignment: .leading, spacing: 14) {
+                Text("Keep this outside the App Store Connect order. Use it only when you want the worksheet to remember source context or import draft answers from a repository.")
+                    .font(.subheadline)
+                    .foregroundStyle(.secondary)
+
+                ViewThatFits(in: .horizontal) {
+                    HStack(spacing: 10) {
+                        aiActions
+                    }
+
+                    VStack(alignment: .leading, spacing: 10) {
+                        aiActions
+                    }
+                }
+
+                ForEach(SubmissionSchema.aiSourceSection.fields) { field in
+                    SubmissionFieldRow(field: field, worksheet: $worksheet, isEditing: isEditing)
+                }
+            }
+            .padding(.top, 12)
+        } label: {
+            HStack(spacing: 10) {
+                Label("AI Source Context", systemImage: "wand.and.stars")
+                    .font(.headline)
+                Spacer()
+                Text(showAISourceContext ? "Hide" : "Show")
+                    .font(.caption.weight(.semibold))
+                    .foregroundStyle(.secondary)
+            }
+        }
+        .padding(16)
+        .background(Color(.systemBackground), in: RoundedRectangle(cornerRadius: 16, style: .continuous))
+        .overlay(
+            RoundedRectangle(cornerRadius: 16, style: .continuous)
+                .stroke(Color(.separator).opacity(0.24))
+        )
+    }
+
+    @ViewBuilder
+    private var aiActions: some View {
+        Button {
+            showRepoImport = true
+        } label: {
+            Label("AI Import", systemImage: "square.and.arrow.down")
+        }
+        .buttonStyle(.bordered)
+
+        Button {
+            worksheet = store.refreshAISourceContext(for: worksheet)
+        } label: {
+            Label("Refresh Local Profile", systemImage: "desktopcomputer")
+        }
+        .buttonStyle(.bordered)
     }
 
     private var requiredFields: [SubmissionField] {
@@ -740,7 +795,7 @@ private struct MediaAssetsInput: View {
             VStack(alignment: .leading, spacing: 6) {
                 Text("App previews: up to 3. Screenshots: up to 10.")
                     .font(.footnote.weight(.semibold))
-                Text("Use one asset folder with the subfolders below so each upload slot is obvious when you move into App Store Connect.")
+                Text("Attach each submission image or preview here. Files are copied into a private folder for this worksheet so they can be shared into App Store Connect later.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
                     .fixedSize(horizontal: false, vertical: true)
@@ -749,6 +804,7 @@ private struct MediaAssetsInput: View {
             TextField("Asset folder path or Drive folder link", text: folderBinding)
                 .textFieldStyle(.roundedBorder)
                 .submitLabel(.done)
+                .disabled(!isEditing)
 
             Button {
                 createFolderTemplate()
@@ -775,7 +831,6 @@ private struct MediaAssetsInput: View {
             RoundedRectangle(cornerRadius: 10, style: .continuous)
                 .stroke(Color(.separator).opacity(0.28))
         )
-        .disabled(!isEditing)
         .onAppear {
             refreshSummary()
         }
@@ -837,6 +892,19 @@ private struct MediaAssetsInput: View {
                 .textFieldStyle(.roundedBorder)
                 .font(.caption)
                 .frame(maxWidth: 128)
+                .disabled(!isEditing)
+
+            MediaAssetAttachmentControls(
+                slot: slot,
+                fileURL: attachedFileURL(for: slot),
+                isEditing: isEditing,
+                onPhotoPicked: { item in
+                    await attach(item, to: slot)
+                },
+                onCopy: {
+                    copyAttachment(for: slot)
+                }
+            )
         }
         .padding(.horizontal, 10)
         .padding(.vertical, 7)
@@ -872,23 +940,19 @@ private struct MediaAssetsInput: View {
     private func refreshSummary() {
         let previewCount = previewSlots.filter { worksheet.values[key("\($0.key)Ready")] == "true" }.count
         let screenshotCount = screenshotSlots.filter { worksheet.values[key("\($0.key)Ready")] == "true" }.count
+        let attachmentCount = (previewSlots + screenshotSlots).filter { attachedFileURL(for: $0) != nil }.count
         let folder = worksheet.values[key("assetFolder"), default: ""]
 
-        if previewCount == 0 && screenshotCount == 0 && folder.isEmpty {
+        if previewCount == 0 && screenshotCount == 0 && attachmentCount == 0 && folder.isEmpty {
             worksheet.values[field.id] = ""
         } else {
-            worksheet.values[field.id] = "Folder: \(folder.isEmpty ? "Not entered" : folder). App previews: \(previewCount)/3. Screenshots: \(screenshotCount)/10."
+            worksheet.values[field.id] = "Folder: \(folder.isEmpty ? "Not entered" : folder). App previews: \(previewCount)/3. Screenshots: \(screenshotCount)/10. Attachments: \(attachmentCount)/13."
         }
     }
 
     private func createFolderTemplate() {
-        guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else { return }
-        let root = documents
-            .appendingPathComponent("AppSubmissionPrepAssets", isDirectory: true)
-            .appendingPathComponent(safeFolderName, isDirectory: true)
-            .appendingPathComponent("previews-and-screenshots", isDirectory: true)
-
         do {
+            let root = try ensureAssetRoot()
             try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
             for slot in previewSlots + screenshotSlots {
                 try FileManager.default.createDirectory(at: root.appendingPathComponent(slot.folderName, isDirectory: true), withIntermediateDirectories: true)
@@ -900,6 +964,82 @@ private struct MediaAssetsInput: View {
         }
     }
 
+    @MainActor
+    private func attach(_ item: PhotosPickerItem, to slot: MediaAssetSlot) async {
+        do {
+            guard let data = try await item.loadTransferable(type: Data.self) else {
+                templateMessage = "Could not read the selected \(slot.kind.lowercased())."
+                return
+            }
+
+            let contentType = preferredContentType(for: item, slot: slot)
+            let folder = try ensureAssetRoot().appendingPathComponent(slot.folderName, isDirectory: true)
+            try FileManager.default.createDirectory(at: folder, withIntermediateDirectories: true)
+
+            let fileName = "\(slot.key)-\(safeFolderName).\(contentType.preferredFilenameExtension ?? fallbackExtension(for: slot))"
+            let fileURL = folder.appendingPathComponent(fileName)
+            try data.write(to: fileURL, options: [.atomic])
+
+            setValue(fileURL.path, for: key("\(slot.key)FilePath"))
+            setValue(fileURL.lastPathComponent, for: key("\(slot.key)Note"))
+            setValue("true", for: key("\(slot.key)Ready"))
+            templateMessage = "Attached \(fileURL.lastPathComponent) to \(slot.kind) \(slot.index)."
+        } catch {
+            templateMessage = "Could not attach \(slot.kind.lowercased()) \(slot.index): \(error.localizedDescription)"
+        }
+    }
+
+    private func attachedFileURL(for slot: MediaAssetSlot) -> URL? {
+        let path = worksheet.values[key("\(slot.key)FilePath"), default: ""]
+        guard !path.isEmpty else { return nil }
+        let url = URL(fileURLWithPath: path)
+        return FileManager.default.fileExists(atPath: url.path) ? url : nil
+    }
+
+    private func copyAttachment(for slot: MediaAssetSlot) {
+        guard let fileURL = attachedFileURL(for: slot),
+              let data = try? Data(contentsOf: fileURL) else {
+            templateMessage = "No attached file found for \(slot.kind) \(slot.index)."
+            return
+        }
+
+        let typeIdentifier = UTType(filenameExtension: fileURL.pathExtension)?.identifier ?? "public.data"
+        UIPasteboard.general.setData(data, forPasteboardType: typeIdentifier)
+        templateMessage = "Copied \(fileURL.lastPathComponent)."
+    }
+
+    private func ensureAssetRoot() throws -> URL {
+        let existingPath = worksheet.values[key("assetFolder"), default: ""]
+        let root: URL
+
+        if existingPath.isEmpty {
+            guard let documents = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first else {
+                throw CocoaError(.fileNoSuchFile)
+            }
+            root = documents
+                .appendingPathComponent("AppSubmissionPrepAssets", isDirectory: true)
+                .appendingPathComponent("\(safeFolderName)-\(worksheet.id.uuidString.prefix(8))", isDirectory: true)
+                .appendingPathComponent("previews-and-screenshots", isDirectory: true)
+            setValue(root.path, for: key("assetFolder"))
+        } else {
+            root = URL(fileURLWithPath: existingPath)
+        }
+
+        try FileManager.default.createDirectory(at: root, withIntermediateDirectories: true)
+        return root
+    }
+
+    private func preferredContentType(for item: PhotosPickerItem, slot: MediaAssetSlot) -> UTType {
+        if let type = item.supportedContentTypes.first(where: { $0.conforms(to: .movie) || $0.conforms(to: .image) }) {
+            return type
+        }
+        return slot.kind == "App Preview" ? .mpeg4Movie : .jpeg
+    }
+
+    private func fallbackExtension(for slot: MediaAssetSlot) -> String {
+        slot.kind == "App Preview" ? "mp4" : "jpg"
+    }
+
     private var safeFolderName: String {
         let base = worksheet.name.isEmpty ? "untitled-app" : worksheet.name
         let allowed = CharacterSet.alphanumerics.union(CharacterSet(charactersIn: "-_ "))
@@ -907,6 +1047,64 @@ private struct MediaAssetsInput: View {
             .replacingOccurrences(of: " ", with: "-")
             .lowercased()
         return cleaned.isEmpty ? "untitled-app" : cleaned
+    }
+}
+
+private struct MediaAssetAttachmentControls: View {
+    let slot: MediaAssetSlot
+    let fileURL: URL?
+    let isEditing: Bool
+    let onPhotoPicked: (PhotosPickerItem) async -> Void
+    let onCopy: () -> Void
+    @State private var selectedItem: PhotosPickerItem?
+
+    var body: some View {
+        HStack(spacing: 6) {
+            PhotosPicker(selection: $selectedItem, matching: pickerFilter, photoLibrary: .shared()) {
+                Image(systemName: fileURL == nil ? "photo.badge.plus" : "photo.fill")
+                    .font(.caption.weight(.semibold))
+                    .frame(width: 28, height: 28)
+                    .background(Color(.secondarySystemGroupedBackground), in: Circle())
+            }
+            .buttonStyle(.plain)
+            .disabled(!isEditing)
+            .accessibilityLabel(fileURL == nil ? "Attach \(slot.kind)" : "Replace attached \(slot.kind)")
+            .onChange(of: selectedItem) { _, newItem in
+                guard let newItem else { return }
+                Task {
+                    await onPhotoPicked(newItem)
+                    await MainActor.run {
+                        selectedItem = nil
+                    }
+                }
+            }
+
+            if let fileURL {
+                ShareLink(item: fileURL) {
+                    Image(systemName: "square.and.arrow.up")
+                        .font(.caption.weight(.semibold))
+                        .frame(width: 28, height: 28)
+                        .background(Color(.secondarySystemGroupedBackground), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Export \(fileURL.lastPathComponent)")
+
+                Button {
+                    onCopy()
+                } label: {
+                    Image(systemName: "doc.on.doc")
+                        .font(.caption.weight(.semibold))
+                        .frame(width: 28, height: 28)
+                        .background(Color(.secondarySystemGroupedBackground), in: Circle())
+                }
+                .buttonStyle(.plain)
+                .accessibilityLabel("Copy \(fileURL.lastPathComponent)")
+            }
+        }
+    }
+
+    private var pickerFilter: PHPickerFilter {
+        slot.kind == "App Preview" ? .any(of: [.images, .videos]) : .images
     }
 }
 

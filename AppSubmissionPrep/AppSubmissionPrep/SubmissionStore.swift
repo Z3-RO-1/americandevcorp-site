@@ -40,10 +40,10 @@ final class SubmissionStore: ObservableObject {
                 save()
             }
 
-            seedMarketDirectoryWorksheet()
+            scrubSeededPersonalContent()
         } catch {
             worksheets = [Self.newWorksheet(sharedProfile: sharedProfile)]
-            seedMarketDirectoryWorksheet()
+            save()
         }
     }
 
@@ -122,40 +122,7 @@ final class SubmissionStore: ObservableObject {
 
     func refreshAISourceContext(for worksheet: SubmissionWorksheet) -> SubmissionWorksheet {
         var copy = worksheet
-        let isMarketDirectory = copy.values["bundleID"] == "american-dev-corp.The-Market-Directory"
-            || copy.values["name"] == "The Market Directory"
-            || copy.name == "The Market Directory"
-
-        guard isMarketDirectory else {
-            copy.values["aiImportNotes"] = "No known local build profile is registered for this worksheet yet."
-            update(copy, reason: "AI source context refresh")
-            return copy
-        }
-
-        let buildValues: [String: String] = [
-            "aiName": "Codex",
-            "buildProjectPath": "/Users/gillythekid/Desktop/Pandoras Box - Developer Sandbox/The Market Directory/The Market Directory.xcodeproj",
-            "buildScheme": "The Market Directory",
-            "buildConfiguration": "Release archive for App Store Connect / TestFlight",
-            "buildDisplayName": "The Market Directory",
-            "buildBundleID": "american-dev-corp.The-Market-Directory",
-            "buildVersion": "1.0",
-            "buildNumber": "1",
-            "name": "The Market Directory",
-            "bundleID": "american-dev-corp.The-Market-Directory",
-            "version": "1.0",
-            "aiImportNotes": """
-            Codex refreshed this worksheet from the registered local build profile.
-
-            Direct build metadata: display name, bundle ID, scheme, marketing version, build number, and project path.
-
-            This refresh does not submit anything to App Store Connect and does not replace manual review.
-            """
-        ]
-
-        copy.values.merge(buildValues) { _, new in new }
-        copy.name = "The Market Directory"
-        copy.bundleID = "american-dev-corp.The-Market-Directory"
+        copy.values["aiImportNotes"] = "No local build profile is registered for this worksheet yet. Add a public repository URL and run AI Import, or fill the build/source fields manually."
         update(copy, reason: "AI source context refresh")
         return copy
     }
@@ -427,191 +394,39 @@ final class SubmissionStore: ObservableObject {
         return worksheet
     }
 
-    private func seedMarketDirectoryWorksheet() {
-        let marketProfile = Self.marketDirectorySharedProfile()
-        sharedProfile.merge(marketProfile) { _, new in new }
-
-        var worksheet = Self.marketDirectoryWorksheet(sharedProfile: sharedProfile)
-
-        if let index = worksheets.firstIndex(where: {
-            $0.values["bundleID"] == worksheet.values["bundleID"] || $0.values["name"] == worksheet.values["name"]
-        }) {
-            var existing = worksheets[index]
-            let originalValues = existing.values
-            let originalImported = existing.imported
-            existing.name = worksheet.name
-            existing.bundleID = worksheet.bundleID
-            existing.status = worksheet.status
-            existing.values.merge(worksheet.values) { _, new in new }
-            existing.imported.merge(worksheet.imported) { current, _ in current }
-            existing.updatedAt = Date()
-            if existing.values != originalValues || existing.imported != originalImported {
-                existing.history.append(WorksheetSnapshot(reason: "Seeded The Market Directory submission answers", values: existing.values, imported: existing.imported))
-            }
-            worksheets[index] = existing
-        } else {
-            worksheet.history = [WorksheetSnapshot(reason: "Seeded The Market Directory submission answers", values: worksheet.values, imported: worksheet.imported)]
-            worksheets.insert(worksheet, at: 0)
-        }
-
-        worksheets = worksheets.map { Self.applySharedProfile(sharedProfile, to: $0) }
-        save()
-    }
-
-    private static func marketDirectorySharedProfile() -> [String: String] {
-        [
-            "developerAccountHolder": "Gilbert Aguirre",
-            "developerTeamID": "BX2DM66ST9",
-            "appStoreAccessRole": "Account Holder",
-            "contactFirstName": "Gilbert",
-            "contactLastName": "Aguirre",
-            "contactEmail": "gilbert.aguirre.office@gmail.com",
-            "contactPhone": "(951) 630-2937",
-            "contentRights": "Owns or has rights",
-            "primaryLanguage": "English (U.S.)",
-            "licenseAgreement": "Standard Apple License Agreement",
-            "distributionMethod": "Public - Discoverable by anyone on the App Store",
-            "releaseChoice": "Manually release this version",
-            "copyright": "2026 American Dev Corp"
-        ]
-    }
-
-    private static func marketDirectoryWorksheet(sharedProfile: [String: String]) -> SubmissionWorksheet {
-        var worksheet = SubmissionWorksheet(
-            name: "The Market Directory",
-            bundleID: "american-dev-corp.The-Market-Directory",
-            status: "Prepare for Submission"
-        )
-
-        worksheet.values = [
-            "status": "Prepare for Submission",
-            "name": "The Market Directory",
-            "subtitle": "Local storefront discovery",
-            "bundleID": "american-dev-corp.The-Market-Directory",
-            "sku": "the-market-directory-ios-001",
-            "appleID": "",
-            "version": "1.0",
-            "aiName": "Codex",
-            "buildProjectPath": "/Users/gillythekid/Desktop/Pandoras Box - Developer Sandbox/The Market Directory/The Market Directory.xcodeproj",
-            "buildScheme": "The Market Directory",
-            "buildConfiguration": "Release archive for App Store Connect / TestFlight",
-            "buildDisplayName": "The Market Directory",
-            "buildBundleID": "american-dev-corp.The-Market-Directory",
-            "buildVersion": "1.0",
-            "buildNumber": "1",
-            "aiImportNotes": """
-            Codex inspected the local Xcode project and related American Dev Corp support/policy pages, then populated this worksheet from the build context and current app submission materials.
-
-            Inferred directly from the Xcode project: display name, bundle ID, marketing version, build number, scheme, and project path.
-
-            Inferred from the American Dev Corp website and app context: support URL, marketing URL, privacy policy URL, description, keywords, category, age-rating notes, encryption notes, and review guidance.
-
-            This worksheet remains the manual review surface before copying answers into App Store Connect.
-            """,
-            "primaryCategory": "Shopping",
-            "secondaryCategory": "Business",
-            "supportURL": "https://americandevcorp.com/apps/the-market-directory.html",
-            "marketingURL": "https://americandevcorp.com/apps/the-market-directory.html",
-            "privacyPolicyURL": "https://americandevcorp.com/policies/the-market-directory-privacy.html",
-            "privacyChoicesURL": "https://americandevcorp.com/policies/privacy.html",
-            "promotionalText": "Discover local storefronts, browse products, and contact sellers directly through a message-first marketplace directory.",
-            "description": """
-            The Market Directory helps consumers discover local and independent storefronts through an organized marketplace directory.
-
-            Browse featured products, explore storefront categories, filter listings by state and city, view product details, read storefront reviews, and contact sellers directly for product questions, purchase requests, or customer support.
-
-            Store Hosts can manage storefront details, product listings, support requests, promotions, and account status. The app is built around direct seller communication instead of anonymous checkout, giving small businesses a cleaner way to receive qualified interest from customers.
-
-            Administrative tools support host access requests, support requests, sponsorship requests, storefront review workflows, analytics, and marketplace quality controls.
-            """,
-            "keywords": "marketplace,vendors,directory,local business,storefronts,shopping,sellers,products",
-            "previewsScreenshots": "App previews: 0/3. Screenshots: 8/10.",
-            "previewsScreenshots.screenshot1Ready": "true",
-            "previewsScreenshots.screenshot1Note": "Shop - Featured Products and Featured Businesses",
-            "previewsScreenshots.screenshot2Ready": "true",
-            "previewsScreenshots.screenshot2Note": "Directory with state and city filters",
-            "previewsScreenshots.screenshot3Ready": "true",
-            "previewsScreenshots.screenshot3Note": "Category storefront listings",
-            "previewsScreenshots.screenshot4Ready": "true",
-            "previewsScreenshots.screenshot4Note": "Storefront detail page with products and reviews",
-            "previewsScreenshots.screenshot5Ready": "true",
-            "previewsScreenshots.screenshot5Note": "Product detail page",
-            "previewsScreenshots.screenshot6Ready": "true",
-            "previewsScreenshots.screenshot6Note": "Message/request quote flow",
-            "previewsScreenshots.screenshot7Ready": "true",
-            "previewsScreenshots.screenshot7Note": "Consumer account creation/sign-in",
-            "previewsScreenshots.screenshot8Ready": "true",
-            "previewsScreenshots.screenshot8Note": "Store Host account tools or admin tools",
-            "routingCoverageFile": "Not applicable - The Market Directory is not a routing/navigation app.",
-            "reviewUsername": "",
-            "reviewPassword": "",
-            "reviewNotes": """
-            Reviewers can browse featured products, storefronts, directory categories, and support/policy screens without signing in.
-
-            Consumer account creation is available in the app. Suggested flows: create/view account, open product detail, open storefront detail, trigger message/purchase request gate, view reviews, and test support request screens.
-
-            Store Host and Admin areas are role-specific tools for marketplace operations and are not required for normal consumer marketplace review.
-            """,
-            "releaseChoice": "Manually release this version",
-            "releaseNoEarlierThan": "",
-            "contentRights": "Owns or has rights",
-            "primaryLanguage": "English (U.S.)",
-            "licenseAgreement": "Standard Apple License Agreement",
-            "distributionMethod": "Public - Discoverable by anyone on the App Store",
-            "pricing": "Free",
-            "availability": "All countries or regions",
-            "taxCategory": "General marketplace directory app.",
-            "ageRatingNotes": """
-            Marketplace directory with user-submitted storefront/product information, direct seller communication, reviews, and upvotes. The app includes community guidelines, admin review tools, support reporting, and age-restricted storefront handling for businesses that require an age gate.
-
-            No gambling, loot boxes, real-money wagering, medical advice, or regulated medical device functionality. Purchases between consumers and sellers are message-first/request-based during beta.
-            """,
-            "encryptionNotes": """
-            Uses standard Apple networking/HTTPS/TLS for communication with backend services. No proprietary or non-standard encryption algorithms are implemented in this build.
-
-            If full custom end-to-end encrypted messaging is added later, revisit App Store encryption/export compliance before submission.
-            """,
-            "digitalServicesAct": "",
-            "vietnamGameLicense": "Not applicable - this is not a game.",
-            "regulatedMedicalDevices": "Not applicable - this app is not medical, health, fitness, or treatment software.",
-            "sharedSecrets": "Not applicable for this TestFlight build. If auto-renewable subscriptions or App Store Server Notifications are activated, configure the relevant shared secret/server notification details in App Store Connect.",
-            "privacyStarted": "true",
-            "accessibilityStarted": "true",
-            "voiceOver": "true",
-            "voiceControl": "true",
-            "largerText": "true",
-            "darkInterface": "false",
-            "differentiateWithoutColor": "true",
-            "sufficientContrast": "true",
-            "reducedMotion": "true",
-            "captions": "false",
-            "audioDescriptions": "false",
-            "ratingsReviewsNotes": "Monitor reviews for support issues, marketplace quality complaints, store-host responsiveness, and product/listing confusion.",
-            "inAppEventsNotes": "Hold for later. Possible future event: featured local storefront spotlight or vendor onboarding campaign.",
-            "promoCodes": "Hold for later. Not needed for the first TestFlight/public submission.",
-            "gameCenterNotes": "Not applicable.",
-            "nominations": "Potential future nomination: local business marketplace and direct seller communication platform. Not needed for first submission.",
-            "subscriptionGroup": "",
-            "billingGracePeriod": "",
-            "streamlinedPurchasing": "",
-            "nonRenewingSubscriptions": "",
-            "additionalInformation": """
-            Product-specific support and privacy pages are live on AmericanDevCorp.com.
-
-            Vendor/storefront content permission is handled in the Store Host onboarding flow. Store Hosts must agree that they have rights to submit storefront, product, image, and business information for publication in The Market Directory.
-
-            Final checks before App Store submission: capture final screenshots, complete the App Store Connect privacy questionnaire, and confirm whether StoreKit subscriptions or in-app purchases are enabled for the submitted build.
-            """,
-            "appReviewStatus": "Preparing for TestFlight",
-            "historyNotes": "Seeded from The Market Directory beta build context on June 8, 2026."
+    private func scrubSeededPersonalContent() {
+        let personalSharedFields = [
+            "developerAccountHolder",
+            "developerTeamID",
+            "appStoreAccessRole",
+            "contactFirstName",
+            "contactLastName",
+            "contactEmail",
+            "contactPhone",
+            "copyright"
         ]
 
-        for (key, value) in sharedProfile where !value.isEmpty {
-            worksheet.values[key] = value
+        let originalWorksheets = worksheets
+        worksheets.removeAll { worksheet in
+            let hasSeedHistory = worksheet.history.contains { $0.reason.localizedCaseInsensitiveContains("Seeded") }
+            let hasLocalMachinePath = worksheet.values.values.contains { $0.localizedCaseInsensitiveContains("/Users/") }
+            let hasPreloadedSourceNotes = worksheet.values["repoImportSummary", default: ""].isEmpty == false
+                || worksheet.values["repoImportProvenance", default: ""].isEmpty == false
+                || worksheet.values["aiImportNotes", default: ""].localizedCaseInsensitiveContains("populated")
+            return hasSeedHistory || hasLocalMachinePath || hasPreloadedSourceNotes
         }
 
-        worksheet.imported = Dictionary(uniqueKeysWithValues: worksheet.values.keys.map { ($0, false) })
-        return worksheet
+        for fieldID in personalSharedFields {
+            sharedProfile[fieldID] = ""
+        }
+
+        if worksheets.isEmpty {
+            worksheets = [Self.newWorksheet(sharedProfile: sharedProfile)]
+        }
+
+        if worksheets != originalWorksheets {
+            save()
+        }
     }
 
     private static func extractSharedProfile(from worksheets: [SubmissionWorksheet]) -> [String: String] {
