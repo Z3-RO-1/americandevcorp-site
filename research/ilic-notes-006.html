@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iLiC Notes 006 | American Dev Corp</title>
+  <meta name="description" content="iLiC Notes 006 on Truth Ledger, auditable knowledge, evidence provenance, and governed validation in AI systems.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/projects/">Projects</a>
+        <a href="/research/">Research</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <article class="wrap prose post-shell">
+      <header class="post-header">
+        <p class="eyebrow">iLiC Notes 006</p>
+        <h1>Truth Ledger: Toward Auditable Knowledge Systems</h1>
+        <p class="post-subtitle">
+          A public architecture note on separating memory from knowledge, preserving evidence, and making AI-supported claims challengeable.
+        </p>
+        <div class="post-meta">
+          <span>June 16, 2026</span>
+          <span class="status-pill">Research Note</span>
+        </div>
+      </header>
+
+      <section class="post-section">
+        <h2>Summary</h2>
+        <p>
+          A recurring problem in AI systems is that conversation, memory, and knowledge are often treated as if they
+          belong to the same category. They do not. A system can remember something without knowing it. A model can
+          produce a plausible sentence without preserving the evidence that would make the sentence auditable. A user can
+          observe something without that observation becoming durable knowledge. This note introduces Truth Ledger as a
+          public-facing research direction for iLiC: evidence-governed knowledge that remains inspectable, challengeable,
+          and accountable over time.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Core Distinction</h2>
+        <p>
+          The design principle is simple: memory is not knowledge. Memory is retained context. Knowledge is a validated
+          observation admitted through governance. That distinction matters because modern AI systems are very good at
+          producing fluent claims, but fluency is not provenance. A useful trust layer should preserve the difference
+          between what was said, what was observed, what evidence supports it, and what has been accepted for later use.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Working Definitions</h2>
+        <p>
+          iLiC uses several terms more carefully than ordinary conversation usually does:
+        </p>
+        <ul>
+          <li><strong>Observation:</strong> something captured from a source, page, document, interface, or event.</li>
+          <li><strong>Claim:</strong> a statement extracted from an observation that may require support or challenge.</li>
+          <li><strong>Evidence:</strong> source material that supports, contradicts, or contextualizes a claim.</li>
+          <li><strong>Memory:</strong> retained context that may help continuity but is not automatically knowledge.</li>
+          <li><strong>Knowledge:</strong> a validated observation admitted through governance with provenance attached.</li>
+        </ul>
+      </section>
+
+      <section class="post-section">
+        <h2>Why Auditability Matters</h2>
+        <p>
+          Most simple AI interaction flows can be described as input, prediction, and output. That is useful, but it is
+          incomplete for systems that are expected to persist, remember, advise, or act across time. A more accountable
+          flow adds evidence and governance before reuse:
+        </p>
+        <p>
+          Input &rarr; Prediction &rarr; Evidence &rarr; Governance &rarr; Output.
+        </p>
+        <p>
+          In this framing, the model is not asked to become the authority. The model may help identify claims, summarize
+          sources, or propose interpretations, but the knowledge layer must retain source context, validation status,
+          and the reason a claim was accepted, rejected, or left unresolved.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Status Instead of Certainty</h2>
+        <p>
+          Truth Ledger should avoid pretending that every claim can be reduced to a permanent binary label. Publicly, the
+          more useful vocabulary is status-based:
+        </p>
+        <ul>
+          <li><strong>Unverified:</strong> captured but not yet supported by validation.</li>
+          <li><strong>Supported:</strong> evidence exists, but further challenge may still be appropriate.</li>
+          <li><strong>Validated:</strong> admitted through the current validation and governance process.</li>
+          <li><strong>Disputed:</strong> meaningful contradiction or uncertainty has been found.</li>
+          <li><strong>Stale:</strong> old enough or unstable enough that revalidation is required.</li>
+        </ul>
+        <p>
+          This is intentionally different from assigning permanent certainty labels. The point is to keep evidence,
+          uncertainty, and governance visible.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Wizard's Role</h2>
+        <p>
+          Wizard is the user-facing evidence collector in this architecture. Its role is to act visibly on behalf of the
+          user, not to scrape secretly or observe outside user-approved interactions. In early versions, Wizard should
+          collect evidence through ordinary front-end interfaces: user-approved browser navigation, visible page capture,
+          screenshots, timestamps, source URLs, and local reports. If login is required, the user authenticates manually.
+          Wizard should make what it is reading and saving understandable before that evidence enters a ledger.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Relationship to iLiC</h2>
+        <p>
+          Truth Ledger is not a separate project from iLiC. It is a continuation of the same governed-cognition arc:
+          persistent memory, explicit governance, evidence validation, and auditability. iLiC provides the orchestration
+          layer. EILOG provides governance over admission and authority. Wizard provides visible collection and user
+          interaction. The ledger preserves the claim, evidence, validation history, challenge history, confidence state,
+          and governance decision.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Challengeable Knowledge</h2>
+        <p>
+          A healthy knowledge system should be able to challenge itself. A claim should carry enough evidence for later
+          review. A validator should be able to explain why a claim is supported. A second validator should be able to
+          challenge that result. New evidence should be able to lower confidence, mark a claim stale, or move a claim
+          into dispute. In this sense, the ledger is not a vault of final answers. It is an inspectable history of what
+          the system currently has reason to rely on.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What This Is Not</h2>
+        <p>
+          This note does not propose a system for rating people, cataloging private individuals, bypassing website
+          access controls, or creating a universal authority over contested claims. The research direction is narrower and more
+          practical: preserve evidence for claims that AI systems may later reuse, make validation visible, and keep
+          human authority above the model's output.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What Is Intentionally Not Disclosed</h2>
+        <p>
+          This note does not disclose private schemas, local ledgers, implementation details, internal prompts, or
+          validator logic. Its purpose is to describe the public research direction: auditable knowledge as a governance
+          layer between users, models, tools, and memory systems.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>References</h2>
+        <ul class="references">
+          <li>Prior iLiC Notes on governed cognition, memory-native systems, visible mutation, and governed operator layers.</li>
+          <li>Public systems literature on provenance, audit trails, evidence retention, and knowledge governance.</li>
+          <li>AI safety and reliability discussions about traceability, uncertainty, and model outputs as non-authoritative proposals.</li>
+        </ul>
+      </section>
+
+      <nav class="continuity-nav" aria-label="Research continuity navigation">
+        <a href="/research/">Research index</a>
+        <a href="/research/ilic-notes-005.html">Previous note</a>
+        <a href="/research/ilic-notes-007.html">Next note</a>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <strong>American Dev Corp</strong>
+      </div>
+      <div>
+        <a href="/research/">Research</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

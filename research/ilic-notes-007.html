@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iLiC Notes 007 | American Dev Corp</title>
+  <meta name="description" content="iLiC Notes 007 on categorical governance as a cost-reduction layer for AI systems.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/projects/">Projects</a>
+        <a href="/research/">Research</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <article class="wrap prose post-shell">
+      <header class="post-header">
+        <p class="eyebrow">iLiC Notes 007</p>
+        <h1>Categorical Governance as a Cost-Reduction Layer</h1>
+        <p class="post-subtitle">
+          A public engineering note on why structured knowledge, role boundaries, and permission rules can make AI systems cheaper, cleaner, and easier to inspect.
+        </p>
+        <div class="post-meta">
+          <span>June 16, 2026</span>
+          <span class="status-pill">Engineering Note</span>
+        </div>
+      </header>
+
+      <section class="post-section">
+        <h2>Summary</h2>
+        <p>
+          A common approach to AI memory is to collect more context and hope the model can sort through it. That works
+          only up to a point. Large, unstructured context creates cost: more tokens, more retrieval noise, more repeated
+          reasoning, more tool calls, more validation work, and more human correction. iLiC takes a different direction:
+          invest upfront in categories, source discipline, scope boundaries, confidence states, and permission rules so
+          runtime decisions can become smaller and more inspectable.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>The Investment</h2>
+        <p>
+          The investment is not simply building a larger knowledge base. The investment is building a governed knowledge
+          catalog. Each catalog should know what it is for, what sources it trusts, where its authority ends, and what
+          permissions are required before its output can be reused. That structure costs design effort early, but it can
+          reduce operational waste later because the system does not need to rediscover the same boundaries on every
+          request.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Why Categories Reduce Runtime Waste</h2>
+        <p>
+          Categorical governance should reduce cost by shrinking the working surface of each interaction. A request does
+          not need the whole memory system, the whole knowledge base, or every available tool. It needs the smallest
+          verified slice that can answer the current need safely.
+        </p>
+        <ul>
+          <li><strong>Less search space:</strong> iLiC can route to the right catalog instead of scanning everything.</li>
+          <li><strong>Less repeated reasoning:</strong> known boundaries and rules can be retrieved instead of re-decided.</li>
+          <li><strong>Less API use:</strong> validated local facts can answer common needs before another model call is required.</li>
+          <li><strong>Less context waste:</strong> only relevant facts need to enter the working context.</li>
+          <li><strong>Less compute churn:</strong> deterministic routing can reduce wandering loops and duplicate validations.</li>
+          <li><strong>Less human correction:</strong> clearer categories reduce wrong-tool, wrong-tone, and wrong-authority outputs.</li>
+        </ul>
+      </section>
+
+      <section class="post-section">
+        <h2>The Operating Loop</h2>
+        <p>
+          The practical loop is intentionally simple:
+        </p>
+        <p>
+          User ask &rarr; Catalog classification &rarr; Small verified retrieval &rarr; Role lens and permission rules
+          &rarr; Answer or proposal &rarr; Cache or memory update if approved.
+        </p>
+        <p>
+          This is the opposite of pushing a large memory pile into a model and asking it to improvise. The goal is to
+          make the surrounding system do more deterministic work before the model is asked to reason, write, or propose.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Role Lenses</h2>
+        <p>
+          A role lens is a governed response mode, not a fictional expert identity. The same system may route through a
+          conversationalist lens for clarity and repair, a literarian lens for writing and rhetoric, a mathematician lens
+          for quantitative reasoning, a research analyst lens for evidence and provenance, or a senior coder lens for
+          software engineering work. Health-related material should be handled as health literacy and medical safety
+          guidance, not as diagnosis or treatment.
+        </p>
+        <p>
+          The value is that each lens can carry its own sources, scope boundaries, confidence levels, and permission
+          rules. That makes the system easier to inspect and harder to misuse.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Cost Is Not Only Money</h2>
+        <p>
+          The cost of an AI system is not just a subscription bill. It includes electricity, CPU time, memory pressure,
+          network calls, API usage, developer attention, user confusion, and trust overhead. A system that repeatedly
+          asks models to rediscover context is spending resources on avoidable uncertainty. A system that knows where a
+          request belongs can spend less effort deciding what kind of problem it is.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Inspectable Value</h2>
+        <p>
+          The business value is not that iLiC remembers everything. The value is that it can know where a thing belongs,
+          what authority it has, what evidence supports it, and when it is allowed to be reused. That is useful to users
+          because it produces better continuity. It is useful to operators because it exposes the control layer around a
+          model without claiming to reveal private model internals.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>Boundary</h2>
+        <p>
+          This note describes an engineering direction, not a guarantee that every categorical system automatically
+          reduces cost in every case. Categories can be wrong, too broad, too narrow, or poorly maintained. The claim is
+          more practical: a well-governed catalog is designed to reduce avoidable search, context, validation, and
+          correction costs over time.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What Is Intentionally Not Disclosed</h2>
+        <p>
+          This note does not disclose private routing logic, internal catalog schemas, memory contents, prompts, model
+          integrations, or validator implementation details. Its purpose is to explain the public design thesis:
+          categorical governance can make AI systems more efficient and inspectable by reducing the amount of repeated
+          uncertainty they must process at runtime.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>References</h2>
+        <ul class="references">
+          <li>Prior iLiC Notes on governed cognition, memory-native systems, Wizard, and Truth Ledger.</li>
+          <li>Systems engineering practices around routing, bounded context, provenance, caching, and auditability.</li>
+          <li>AI operations discussions about context cost, retrieval quality, tool-use overhead, and human validation effort.</li>
+        </ul>
+      </section>
+
+      <nav class="continuity-nav" aria-label="Research continuity navigation">
+        <a href="/research/">Research index</a>
+        <a href="/research/ilic-notes-006.html">Previous note</a>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <strong>American Dev Corp</strong>
+      </div>
+      <div>
+        <a href="/research/">Research</a>
+      </div>
+    </div>
+  </footer>
+</body>
+</html>
