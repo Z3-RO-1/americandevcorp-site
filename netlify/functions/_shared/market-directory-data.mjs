@@ -125,12 +125,37 @@ export async function resolveStoreHostByEmail(email) {
   return hosts.find((host) => host.email === normalized) || null;
 }
 
+export async function resolveStoreHostByKey(key) {
+  if (!key) {
+    return null;
+  }
+
+  const hosts = await listStoreHosts();
+  return hosts.find((host) => host.key === key) || null;
+}
+
 // Active consumer accounts, folded from consumer-signup records with any later
 // consumer-deletion tombstone applied. The record's blob `key` is included so callers
 // (e.g. account deletion) can address the exact underlying blob without re-scanning.
+//
+// A later consumer-signup for the same email is treated as a profile-update event, not a
+// fresh account — only first_name/last_name/address may change that way. email and birth_date
+// stay pinned to whatever the original signup recorded, since birth_date backs age verification
+// and must not be gameable by "re-submitting" the signup form with a different date.
 export async function listConsumers() {
   const records = await listStoreJSON(marketDirectoryStore());
   const consumers = new Map();
+  const deletedAt = new Map();
+
+  for (const record of records) {
+    if (record.endpoint !== "consumer-deletion") {
+      continue;
+    }
+    const email = text((record.payload || {}).email).toLowerCase();
+    if (email && !deletedAt.has(email)) {
+      deletedAt.set(email, record.createdAt);
+    }
+  }
 
   for (const record of records.slice().reverse()) {
     if (record.endpoint !== "consumer-signup") {
@@ -138,14 +163,26 @@ export async function listConsumers() {
     }
 
     const email = text((record.payload || {}).email).toLowerCase();
-    if (!email || consumers.has(email)) {
+    if (!email) {
       continue;
     }
 
-    consumers.set(email, { ...record.payload, email, recordKey: record.key, created_at: record.createdAt });
+    const existing = consumers.get(email);
+    consumers.set(email, existing
+      ? {
+          ...existing,
+          first_name: text(record.payload.first_name) || existing.first_name,
+          last_name: text(record.payload.last_name) || existing.last_name,
+          address: text(record.payload.address) || existing.address,
+          updated_at: record.createdAt
+        }
+      : { ...record.payload, email, recordKey: record.key, created_at: record.createdAt });
   }
 
-  return Array.from(consumers.values());
+  return Array.from(consumers.values()).filter((consumer) => {
+    const deletion = deletedAt.get(consumer.email);
+    return !deletion || deletion < (consumer.updated_at || consumer.created_at);
+  });
 }
 
 export async function resolveConsumerByEmail(email) {

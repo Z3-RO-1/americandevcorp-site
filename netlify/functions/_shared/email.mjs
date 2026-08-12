@@ -120,6 +120,19 @@ export function hostAccessCodeEmail({ businessName, code }) {
   };
 }
 
+export function hostAccessDeniedEmail({ businessName }) {
+  return {
+    subject: `Update on your Store Host request${businessName ? ` for ${businessName}` : ""}`,
+    text: [
+      "Thank you for requesting Store Host access on The Market Directory.",
+      "",
+      "After review, this request is not ready to move forward at this time. You're welcome to submit a new request with more detail about your business whenever you're ready.",
+      "",
+      "American Dev Corp"
+    ].join("\n")
+  };
+}
+
 export function denialEmail({ name, appName }) {
   return {
     subject: `American Dev Corp update for ${appName || "your iOS app request"}`,
