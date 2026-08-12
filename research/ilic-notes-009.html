@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iLiC Notes 009 | American Dev Corp</title>
+  <meta name="description" content="iLiC Notes 009 on evidence-grounded conversation, Personal Internet Library retrieval, citation trails, and governed source use.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/projects/">Projects</a>
+        <a href="/research/">Research</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <article class="wrap prose post-shell">
+      <header class="post-header">
+        <p class="eyebrow">iLiC Notes 009</p>
+        <h1>Evidence-Grounded Conversation</h1>
+        <p class="post-subtitle">
+          A public engineering note on separating fluent conversation from usable knowledge by routing answers through indexed evidence, citations, review artifacts, and governance boundaries.
+        </p>
+        <div class="post-meta">
+          <span>June 28, 2026</span>
+          <span class="status-pill">Engineering Note</span>
+        </div>
+      </header>
+
+      <section class="post-section">
+        <h2>Core Claim</h2>
+        <p>
+          iLiC is beginning to separate fluent conversation from usable knowledge. A response should not be treated as
+          reliable because it sounds confident. A response becomes usable when it can be traced to indexed source
+          evidence, cited, evaluated, and kept inside governance boundaries.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>The Current Loop</h2>
+        <p>
+          The working loop is:
+        </p>
+        <p>
+          User question &rarr; Conversation planning &rarr; Source-library indexing &rarr; Source retrieval &rarr;
+          Chunk inspection &rarr; Evidence-grounded answer &rarr; Reasoning trace &rarr; Claim Ledger record &rarr;
+          Human review before memory or KB promotion.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>What Changed</h2>
+        <p>
+          The newest iLiC layer introduces document-grounded answering from the Personal Internet Library. When the user
+          asks a question, iLiC can classify the question, avoid stale local documents for current-events needs, search
+          local source chunks, inspect matching text, compose an answer from retrieved evidence, cite source chunks with
+          internal links, report which files and chunks were examined, and explain why the answer is the most supported
+          working answer.
+        </p>
+        <p>
+          The important boundary remains: this process does not automatically write memory or promote knowledge.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Why This Matters</h2>
+        <p>
+          Most chat systems collapse conversation, memory, knowledge, confidence, inference, and source use into one
+          output. iLiC is trying to keep those layers separate.
+        </p>
+        <p>
+          Conversation is not knowledge. Memory is not knowledge. Source material is not knowledge. Validated evidence
+          can support a working answer. Governance decides what becomes durable.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Current Architecture</h2>
+        <p>
+          The Conversation Planner breaks stacked human questions into smaller units and labels them. The Evidence
+          Answerer searches the Personal Internet Library and composes an answer from retrieved chunks. The Claim Ledger
+          stores the review artifact: what was claimed, what evidence was used, what source files were involved, what
+          confidence was assigned, and whether the result is supported or unverified.
+        </p>
+        <p>
+          None of these layers replaces the FSM. The planner prepares the route, the answerer drafts from evidence, and
+          the ledger records the claim. Governance still controls what becomes durable.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Demonstrated Behavior</h2>
+        <p>
+          The current test pattern shows that iLiC can answer from more than one local document. One document can
+          contain part of a subject, another document can contain another part, and a single related question can cause
+          iLiC to retrieve both, cite both, explain the evidence path, and leave memory unchanged unless human approval
+          happens.
+        </p>
+        <p>
+          This is a meaningful step beyond hard-coded responses. It shows a path toward answers that can be inspected
+          after they are given.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What This Is Not Yet</h2>
+        <p>
+          This is not broad expert reasoning. It is not a claim that every answer is correct. It is not autonomous
+          learning. It is not public-ready proof of product quality. It is a controlled step toward auditable
+          conversation, where the system can explain what it used, why it used it, and what boundary still applies.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Next Proof Needed</h2>
+        <p>
+          The next clean owner demo should add real owner-authored documents to the Personal Internet Library, ask Wizard
+          a natural question related to those documents, confirm iLiC plans the question, confirm relevant chunks are
+          retrieved, confirm the answer includes citations, confirm Wizard shows the background audit trail, and confirm
+          memory remains unchanged unless human approval happens.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>Boundary</h2>
+        <p>
+          Retrieved source evidence may support an answer. Human approval is required before memory or KB promotion. The
+          FSM remains the decision authority. The LLM remains a text-generation subroutine only.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What Is Intentionally Not Disclosed</h2>
+        <p>
+          This note does not disclose private source-library contents, memory contents, prompts, credentials, internal
+          validators, or implementation details that would weaken the security of the system. It publishes the public
+          design thesis: useful AI conversation should be able to show its evidence path.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>References</h2>
+        <ul class="references">
+          <li>Prior iLiC Notes on governed cognition, memory, Truth Ledger, and governed learning.</li>
+          <li>Local-first knowledge management practices around owner-controlled source libraries and citation trails.</li>
+          <li>AI evaluation practices around retrieval, provenance, and evidence-grounded response generation.</li>
+        </ul>
+      </section>
+
+      <nav class="continuity-nav" aria-label="Research continuity navigation">
+        <a href="/research/">Research index</a>
+        <a href="/research/ilic-notes-008.html">Previous note</a>
+        <a href="/research/ilic-notes-010.html">Next note</a>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <strong>American Dev Corp</strong>
+      </div>
+      <div>
+        <a href="/research/">Research</a>
+      </div>
+    </div>
+  </footer>
+  <script src="/analytics.js" defer></script>
+</body>
+</html>

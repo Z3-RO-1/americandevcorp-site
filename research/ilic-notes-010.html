@@ -1,0 +1,190 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>iLiC Notes 010 | American Dev Corp</title>
+  <meta name="description" content="iLiC Notes 010 on cooperating governed subsystems and conversation coherence as an evaluation layer for AI cognition systems.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/about.html">About</a>
+        <a href="/apps/">Apps</a>
+        <a href="/projects/">Projects</a>
+        <a href="/research/">Research</a>
+        <a href="/policies/">Policies</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <article class="wrap prose post-shell">
+      <header class="post-header">
+        <p class="eyebrow">iLiC Notes 010</p>
+        <h1>Cooperating Subsystems and Conversation Coherence</h1>
+        <p class="post-subtitle">
+          A public engineering note on iLiC as a governed set of cooperating subsystems, and why conversation quality needs repeatable evaluation rather than trust-by-vibes.
+        </p>
+        <div class="post-meta">
+          <span>July 3, 2026</span>
+          <span class="status-pill">Engineering Note</span>
+        </div>
+      </header>
+
+      <section class="post-section">
+        <h2>Summary</h2>
+        <p>
+          iLiC should not be understood as one model trying to be a mind. It is better understood as a governed system
+          of cooperating subsystems. Conversation, memory, source evidence, candidate knowledge, validation, telemetry,
+          and human approval are separated on purpose. That separation makes the system slower to accept unsupported
+          claims, but easier to inspect, repair, and trust over time.
+        </p>
+        <p>
+          The latest hardening step adds a repeatable conversation coherence evaluation layer. Instead of deciding that
+          iLiC is improving because one response sounds good, the system can run a controlled multi-turn script and
+          check continuity, routing, source discipline, placeholder failures, and accidental Candidate Shelf staging.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>The Subsystem Model</h2>
+        <p>
+          iLiC is not a single chatbot. It is a coordinated architecture where each subsystem has a limited role,
+          boundary, and audit trail. The practical model is:
+        </p>
+        <ul>
+          <li><strong>Wizard:</strong> the visible operator and review layer.</li>
+          <li><strong>iLiC FSM:</strong> the deterministic governance and decision layer.</li>
+          <li><strong>Bookworm:</strong> the local source-library caretaker and indexing layer.</li>
+          <li><strong>Personal Internet Library:</strong> private source material that can be searched and cited.</li>
+          <li><strong>Candidate Shelf:</strong> a staging area for possible future knowledge, not durable memory.</li>
+          <li><strong>Claim Ledger:</strong> an audit trail for claims, evidence, status, and validation history.</li>
+          <li><strong>Memory Store:</strong> governed durable recall, written only through approved memory paths.</li>
+          <li><strong>Telemetry:</strong> records of what happened, when, and through which path.</li>
+          <li><strong>Validators:</strong> deterministic checks that challenge weak evidence, contradictions, and unsafe promotion.</li>
+        </ul>
+        <p>
+          This structure matters because it prevents one fluent answer from silently becoming trusted knowledge. Each
+          subsystem can do useful work, but none of them should be allowed to collapse the whole governance loop into
+          automatic acceptance.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Why Coherence Needs Evaluation</h2>
+        <p>
+          Conversation can fail in ways that look harmless at first. A response can sound confident while routing to the
+          wrong source, misreading a follow-up, citing weak evidence, or staging a bad Candidate Shelf entry. That means
+          conversation quality cannot be judged only by whether one answer reads well.
+        </p>
+        <p>
+          The current coherence evaluator runs a fixed ten-turn conversation and checks whether the system preserves
+          context, answers follow-ups, avoids placeholder replies, avoids weak source misuse, and refuses to stage
+          unsupported candidates. It is a small test, but it creates a repeatable pressure loop:
+        </p>
+        <p>
+          Conversation script &rarr; Response &rarr; Coherence checks &rarr; Failure report &rarr; System hardening
+          &rarr; Re-run.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>What the Evaluator Catches</h2>
+        <p>
+          The evaluator is intentionally practical. It is not a claim that iLiC understands every conversation. It checks
+          a defined slice of behavior that matters to governed cognition:
+        </p>
+        <ul>
+          <li>Does the system preserve the topic across turns?</li>
+          <li>Does it resolve a follow-up such as "why does that matter?" against the prior subject?</li>
+          <li>Does it avoid using the source library when the source does not actually answer the question?</li>
+          <li>Does it avoid staging Candidate Shelf entries from weak or irrelevant evidence?</li>
+          <li>Does it avoid placeholder answers such as "I am ready to help" during a live thread?</li>
+          <li>Does it summarize the conversation using the actual topic that was discussed?</li>
+        </ul>
+        <p>
+          This kind of evaluation is boring in the best way. It turns improvement into something measurable.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>The Hardening Result</h2>
+        <p>
+          In the latest local run, the first evaluator pass failed. That was the important part. It exposed source
+          overreach, weak follow-up handling, accidental candidate staging, and placeholder responses. After hardening,
+          the evaluator passed its current script with no weak source misuse, no accidental Candidate Shelf staging, no
+          placeholder responses, and no failed checks.
+        </p>
+        <p>
+          The point is not that this proves finished intelligence. It proves a healthier development pattern: the system
+          can fail a repeatable test, explain where it failed, and then be hardened against that failure mode.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Why This Fits Governed Cognition</h2>
+        <p>
+          Governed cognition is not just about stopping dangerous actions. It is also about stopping subtle drift. A
+          system that forgets what "that" refers to, cites a source that only loosely overlaps the question, or stages a
+          bad candidate because the wording sounded plausible is not ready to be trusted as a memory-bearing assistant.
+        </p>
+        <p>
+          Coherence evaluation becomes part of the governance layer because it protects continuity before continuity is
+          written into memory. The system should be able to converse, retrieve, stage, and remember, but each path should
+          remain inspectable and bounded.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>Boundary</h2>
+        <p>
+          This note describes a local engineering milestone and research direction. It does not claim general
+          intelligence, autonomous authority, or human-like understanding. The coherence evaluator is one controlled
+          measurement layer, not a universal benchmark. Its value is that it catches known failure modes and makes
+          improvement repeatable.
+        </p>
+      </section>
+
+      <section class="post-section boundary-note">
+        <h2>What Is Intentionally Not Disclosed</h2>
+        <p>
+          This note does not disclose private source-library contents, memory contents, credentials, prompts, internal
+          routing details, or implementation code. It publishes the public design thesis: governed cognition should be
+          built from bounded cooperating subsystems, and conversation quality should be tested through repeatable
+          evaluation rather than assumed from fluent output.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>References</h2>
+        <ul class="references">
+          <li>Prior iLiC Notes on governed cognition, Wizard, Truth Ledger, categorical governance, and governed learning.</li>
+          <li>Systems engineering practices around state machines, audit trails, regression testing, and bounded authority.</li>
+          <li>AI evaluation practices focused on retrieval quality, conversation continuity, and failure-mode regression tests.</li>
+        </ul>
+      </section>
+
+      <nav class="continuity-nav" aria-label="Research continuity navigation">
+        <a href="/research/">Research index</a>
+        <a href="/research/ilic-notes-009.html">Previous note</a>
+      </nav>
+    </article>
+  </main>
+
+  <footer class="site-footer">
+    <div class="wrap footer-grid">
+      <div>
+        <strong>American Dev Corp</strong>
+      </div>
+      <div>
+        <a href="/research/">Research</a>
+      </div>
+    </div>
+  </footer>
+  <script src="/analytics.js" defer></script>
+</body>
+</html>

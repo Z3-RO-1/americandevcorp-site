@@ -49,17 +49,26 @@ export default async (req) => {
     createdAt: new Date().toISOString()
   });
 
-  const emailResult = await sendEmail({
-    to: email,
-    subject: "Your American Dev Corp sign-in code",
-    text: [
-      "Use this code to sign in to American Dev Corp:",
-      "",
-      code,
-      "",
-      "This code expires in 10 minutes. If you did not request it, you can ignore this email."
-    ].join("\n")
-  });
+  let emailResult;
+  try {
+    emailResult = await sendEmail({
+      to: email,
+      subject: "Your American Dev Corp sign-in code",
+      text: [
+        "Use this code to sign in to American Dev Corp:",
+        "",
+        code,
+        "",
+        "This code expires in 10 minutes. If you did not request it, you can ignore this email."
+      ].join("\n")
+    });
+  } catch (error) {
+    console.error("Sign-in email provider failed.", {
+      email,
+      message: error?.message || String(error)
+    });
+    emailResult = { sent: false, reason: "Email provider failed" };
+  }
 
   if (!emailResult.sent) {
     await signInCodeStore().delete(email);

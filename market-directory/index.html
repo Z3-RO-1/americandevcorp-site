@@ -1,0 +1,57 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>The Market Directory Storefront</title>
+  <meta name="description" content="Open a shared storefront in The Market Directory.">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div class="wrap">
+      <a class="brand" href="/">American Dev Corp</a>
+      <nav class="nav">
+        <a href="/apps/the-market-directory.html">The Market Directory</a>
+        <a href="/policies/the-market-directory-privacy.html">Privacy</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="section">
+    <div class="wrap prose">
+      <p class="eyebrow">Shared Storefront</p>
+      <h1 id="storefront-title">Open this storefront in The Market Directory</h1>
+      <p id="storefront-copy">
+        A storefront was shared with you from The Market Directory. Install or open the app, then search the storefront name shown here.
+      </p>
+
+      <p>
+        <a class="button" href="https://apps.apple.com/us/app/the-market-directory/id6773544566">Open The Market Directory on the App Store</a>
+      </p>
+
+      <h2>Storefront</h2>
+      <p id="storefront-name">Loading storefront name...</p>
+
+      <p class="muted">
+        The Market Directory is a curated marketplace for discovering businesses, browsing listed products, and contacting storefront owners directly.
+      </p>
+    </div>
+  </main>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const storefront = params.get("storefront") || params.get("store") || params.get("seller");
+    if (storefront) {
+      const clean = storefront.trim();
+      document.title = clean + " | The Market Directory";
+      document.getElementById("storefront-title").textContent = clean;
+      document.getElementById("storefront-copy").textContent = clean + " was shared with you from The Market Directory.";
+      document.getElementById("storefront-name").textContent = clean;
+    } else {
+      document.getElementById("storefront-name").textContent = "No storefront name was included in this link.";
+    }
+  </script>
+  <script src="/analytics.js" defer></script>
+</body>
+</html>

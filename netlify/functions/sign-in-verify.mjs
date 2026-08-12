@@ -1,3 +1,4 @@
+import { createToken } from "./_shared/auth.mjs";
 import { json, readJSON } from "./_shared/json.mjs";
 import { signInCodeStore } from "./_shared/storage.mjs";
 
@@ -87,9 +88,10 @@ export default async (req) => {
 
   await store.delete(email);
   const token = await createUserToken(email);
+  const adminToken = await createToken();
 
   return json(
-    { ok: true, email },
+    { ok: true, email, admin_token: adminToken },
     {
       headers: {
         "Set-Cookie": `adc_user=${token}; HttpOnly; Secure; SameSite=Lax; Path=/; Max-Age=2592000`

@@ -49,6 +49,7 @@
         <div class="admin-tabs">
           <button class="button" type="button" data-tab="requests">Request Submissions</button>
           <button class="button button-secondary" type="button" data-tab="applications">Application Submissions</button>
+          <button class="button button-secondary" type="button" data-tab="analytics">Site Analytics</button>
         </div>
 
         <section class="admin-inbox" id="requestsInbox">
@@ -61,6 +62,13 @@
           <h2>Application Submission Inbox</h2>
           <p class="form-note">Detailed application intake submissions appear here after a requester uses an approved access code.</p>
           <div class="admin-list" id="applicationsList"></div>
+        </section>
+
+        <section class="admin-inbox hidden" id="analyticsInbox">
+          <h2>Site Analytics</h2>
+          <p class="form-note">First-party, cookie-free counts for public pages. Admin pages are not tracked.</p>
+          <div class="analytics-summary" id="analyticsSummary"></div>
+          <div class="admin-list" id="analyticsList"></div>
         </section>
       </section>
     </div>
@@ -139,6 +147,27 @@
       `;
     }
 
+    function analyticsMetric(label, value) {
+      return `
+        <article class="admin-card analytics-metric">
+          <p class="eyebrow">${escapeHTML(label)}</p>
+          <h3>${escapeHTML(value)}</h3>
+        </article>
+      `;
+    }
+
+    function analyticsRows(title, rows, formatter) {
+      const body = rows.length
+        ? rows.map(formatter).join("")
+        : "<p class=\"form-note\">No data yet.</p>";
+      return `
+        <article class="admin-card">
+          <h3>${escapeHTML(title)}</h3>
+          <div class="analytics-table">${body}</div>
+        </article>
+      `;
+    }
+
     async function loadRequests() {
       const list = document.getElementById("requestsList");
       list.innerHTML = "<p>Loading requests...</p>";
@@ -151,6 +180,49 @@
       list.innerHTML = "<p>Loading applications...</p>";
       const data = await api("/api/admin/submissions?type=applications");
       list.innerHTML = data.items.length ? data.items.map(applicationCard).join("") : "<p>No application submissions yet.</p>";
+    }
+
+    async function loadAnalytics() {
+      const summary = document.getElementById("analyticsSummary");
+      const list = document.getElementById("analyticsList");
+      summary.innerHTML = analyticsMetric("Page views, 30 days", "Loading...");
+      list.innerHTML = "";
+      const data = await api("/api/admin/analytics?days=30");
+      summary.innerHTML = [
+        analyticsMetric("Page views, 30 days", data.totals?.pageviews || 0),
+        analyticsMetric("Approx. daily visitors", data.totals?.visitors || 0),
+        analyticsMetric("Tracked public pages", data.pages?.length || 0)
+      ].join("");
+      list.innerHTML = [
+        analyticsRows("Top pages", data.pages || [], (page) => `
+          <div class="analytics-row">
+            <span>${escapeHTML(page.title || page.path)}</span>
+            <span>${escapeHTML(page.path)}</span>
+            <strong>${escapeHTML(page.pageviews)} views</strong>
+          </div>
+        `),
+        analyticsRows("Recent days", (data.daily || []).slice().reverse().slice(0, 14), (day) => `
+          <div class="analytics-row">
+            <span>${escapeHTML(day.day)}</span>
+            <span>${escapeHTML(day.visitors)} visitors</span>
+            <strong>${escapeHTML(day.pageviews)} views</strong>
+          </div>
+        `),
+        analyticsRows("Referrers", data.referrers || [], (item) => `
+          <div class="analytics-row">
+            <span>${escapeHTML(item.name)}</span>
+            <span></span>
+            <strong>${escapeHTML(item.count)}</strong>
+          </div>
+        `),
+        analyticsRows("Browsers", data.browsers || [], (item) => `
+          <div class="analytics-row">
+            <span>${escapeHTML(item.name)}</span>
+            <span></span>
+            <strong>${escapeHTML(item.count)}</strong>
+          </div>
+        `)
+      ].join("");
     }
 
     async function showAdmin() {
@@ -185,8 +257,10 @@
       if (!tab) return;
       document.getElementById("requestsInbox").classList.toggle("hidden", tab !== "requests");
       document.getElementById("applicationsInbox").classList.toggle("hidden", tab !== "applications");
+      document.getElementById("analyticsInbox").classList.toggle("hidden", tab !== "analytics");
       if (tab === "requests") await loadRequests();
       if (tab === "applications") await loadApplications();
+      if (tab === "analytics") await loadAnalytics();
     });
 
     document.getElementById("requestsList").addEventListener("click", async (event) => {

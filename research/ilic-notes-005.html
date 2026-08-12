@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>iLiC Notes 005 | American Dev Corp</title>
-  <meta name="description" content="iLiC Notes 005 introducing Wizard as the governed operator layer for iLiC.">
+  <meta name="description" content="iLiC Notes 005 on verified propagation, end-to-end assurance, and governed cognition systems.">
   <link rel="stylesheet" href="/styles.css">
 </head>
 <body>
@@ -25,73 +25,120 @@
     <article class="wrap prose post-shell">
       <header class="post-header">
         <p class="eyebrow">iLiC Notes 005</p>
-        <h1>Wizard as the Governed Operator Layer</h1>
+        <h1>Verified Propagation in Governed Cognition</h1>
         <p class="post-subtitle">
-          A public note introducing Wizard as the human-facing embodiment of iLiC and the control surface for governed autonomy.
+          A public architecture note on why correct internal state must be proven to reach the point of use.
         </p>
         <div class="post-meta">
           <span>June 15, 2026</span>
-          <span class="status-pill">Research Note</span>
+          <span class="status-pill">Public Architecture Note</span>
         </div>
       </header>
 
       <section class="post-section">
         <h2>Summary</h2>
         <p>
-          Wizard is the operator-facing embodiment of iLiC. It is not presented as a general chatbot or an invisible
-          automation layer. Its purpose is to give the user a visible place to speak, inspect, approve, remember, and
-          understand what the system is doing. iLiC provides the governed cognition core underneath that interface;
-          Wizard makes that core usable as an accountable local companion.
+          A governed cognition system can contain individually correct components while still failing as a governed
+          system. A context layer may correctly identify ambiguity. A retrieval layer may correctly find evidence. A
+          response layer may correctly accept instruction. Yet if the correct internal state does not reach the layer
+          that acts, the system may behave as if the computation never happened. This note introduces verified
+          propagation as a public architecture principle: correctness must be proven not only where it is computed, but
+          also where it is consumed.
         </p>
       </section>
 
       <section class="post-section">
-        <h2>Why Wizard Comes First</h2>
+        <h2>Problem</h2>
         <p>
-          A governed cognition system needs an understandable front door. Without one, architecture terms such as memory,
-          telemetry, agents, state machines, and approval loops can sound abstract. Wizard gives those ideas a practical
-          shape. It is the panel the user sees, the place where requests begin, the place where system activity can be
-          inspected, and the layer that should ask before meaningful machine actions occur.
+          Component-level testing is necessary, but it can create a misleading kind of confidence. A module can pass its
+          own tests while its output is dropped, bypassed, overwritten, or ignored by a later part of the runtime. In
+          ordinary software, that may appear as an integration defect. In a cognition system, it becomes a governance
+          problem. The system may have correctly detected a condition that should change behavior, while the visible
+          answer proceeds as if no condition was detected.
+        </p>
+        <p>
+          This failure mode is subtle because no single component has to be wrong. The problem lives in the connection
+          between them. If architecture review stops at whether each part works locally, it can miss whether the correct
+          state actually survives the path from observation to response.
         </p>
       </section>
 
       <section class="post-section">
-        <h2>Governed Autonomy</h2>
+        <h2>Constraint</h2>
         <p>
-          Wizard and iLiC are designed around governed autonomy, not uncontrolled automation. The system can initiate,
-          observe, suggest, remember, and prepare actions, but the user remains the authority. Meaningful action should
-          be bounded by consent, policy, provenance, telemetry, and approval. The goal is not to create an AI with
-          sovereign free will, but a trusted operating layer that can help without becoming unaccountable.
+          Governed cognition depends on the movement of authority through the system. A signal that identifies
+          uncertainty, evidence, risk, conflict, or required approval has no practical force unless downstream behavior
+          is obligated to receive it. The constraint is therefore stricter than ordinary correctness. The system must
+          show that a governance-relevant computation reaches the point where action, refusal, clarification, citation,
+          or deferral is decided.
         </p>
       </section>
 
       <section class="post-section">
-        <h2>System Relationship</h2>
+        <h2>Design Principle</h2>
         <p>
-          Publicly, the relationship can be described simply: Wizard is the user-facing operator layer, while iLiC is the
-          governed cognition engine underneath it. Wizard handles the lived interaction: chat, thread steering, memory
-          inspection, health signals, telemetry views, agent surfaces, and approval prompts. iLiC handles the internal
-          control discipline: deterministic state flow, bounded memory behavior, knowledge lookup, proposal generation,
-          and governed execution paths.
+          The design principle is verified propagation: a governed system should treat state arrival as a separately
+          testable property. It is not enough to know that a signal was computed. The architecture should prove that the
+          signal was carried forward, preserved across control boundaries, and allowed to affect the final behavior when
+          relevant. In this framing, an internal result that never reaches the output is not a harmless implementation
+          detail. It is an unfulfilled governance obligation.
         </p>
       </section>
 
       <section class="post-section">
-        <h2>Design Boundary</h2>
+        <h2>Architecture Direction</h2>
         <p>
-          The system may produce autonomous-origin candidates, such as research thoughts or proposed next actions, but
-          that is not the same as independent authority. A useful operator layer can notice and prepare without taking
-          over. Wizard's job is to keep initiative visible, constrained, and answerable to the person using the system.
+          Publicly, the architecture direction is to make propagation guarantees explicit. Tests should not only ask
+          whether a resolver, retriever, evaluator, or policy layer produces the correct state in isolation. They should
+          also ask whether real interaction sequences carry that state into the branch that determines behavior. This
+          requires end-to-end verification, adversarial scenarios, and negative checks that prove bypass paths did not
+          quietly answer before governance had a chance to act.
+        </p>
+        <p>
+          In a mature governed runtime, the path of a meaningful signal should be inspectable: where it arose, where it
+          traveled, where it was consumed, and how it changed the system's response. That does not require disclosing
+          private implementation detail. It requires treating propagation as part of the public trust model rather than
+          an assumption hidden behind passing unit tests.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Tradeoffs</h2>
+        <p>
+          Verified propagation adds friction. End-to-end tests are slower than unit tests. Adversarial interaction
+          sequences are harder to maintain than isolated fixtures. Negative assertions can reveal old shortcuts that
+          looked acceptable when judged only by final text. These costs are real. The benefit is that the system becomes
+          harder to fool with its own internal success. It must demonstrate that correct state becomes correct behavior,
+          not merely that correct state briefly existed somewhere upstream.
+        </p>
+      </section>
+
+      <section class="post-section">
+        <h2>Current Status</h2>
+        <p>
+          This note reflects an active hardening principle within the iLiC research arc. Earlier notes establish
+          governed cognition, continuity, visible mutation, and recursive consensus pressure as architectural concerns.
+          Verified propagation extends that work by naming a distinct category of assurance: the need to prove that
+          governance-relevant state reaches the place where user-visible behavior is produced.
         </p>
       </section>
 
       <section class="post-section boundary-note">
         <h2>What Is Intentionally Not Disclosed</h2>
         <p>
-          This note does not disclose private control paths, local memory contents, agent internals, prompts, or
-          implementation details. Its purpose is to introduce Wizard as a public-facing concept before describing iLiC's
-          deeper governed cognition architecture.
+          This note does not disclose private runtime paths, internal test cases, prompts, implementation logic, storage
+          schemas, or specific operational vulnerabilities. Its purpose is to describe the architectural principle that
+          correct internal state must be verified at the point of use, without weakening the system boundary.
         </p>
+      </section>
+
+      <section class="post-section">
+        <h2>References</h2>
+        <ul class="references">
+          <li>Prior iLiC Notes on governed cognition, memory-native continuity, visible mutation, and consensus pressure.</li>
+          <li>Public systems literature on end-to-end testing, integration safety, traceability, and observable control flow.</li>
+          <li>AI reliability discussions around grounded behavior, policy enforcement, and the limits of component-only evaluation.</li>
+        </ul>
       </section>
 
       <nav class="continuity-nav" aria-label="Research continuity navigation">
@@ -112,5 +159,6 @@
       </div>
     </div>
   </footer>
+  <script src="/analytics.js" defer></script>
 </body>
 </html>

@@ -84,6 +84,39 @@ export function adminMarketDirectoryEmail(record) {
   };
 }
 
+export function marketDirectoryProductDecisionEmail(record) {
+  const payload = record.payload || {};
+  const status = String(payload.status || "").toLowerCase();
+  const approved = status === "listed";
+  const productTitle = payload.product_title || "your product";
+  const storefrontName = payload.storefront_name || "your storefront";
+  const reviewNote = payload.review_note || (approved
+    ? "Approved for public listing."
+    : "Your product needs an update before it can go live.");
+
+  return {
+    to: payload.store_host_email,
+    subject: approved
+      ? `The Market Directory product approved: ${productTitle}`
+      : `The Market Directory product needs changes: ${productTitle}`,
+    text: [
+      `Hello ${payload.owner_name || "Store Host"},`,
+      "",
+      `Product: ${productTitle}`,
+      `Storefront: ${storefrontName}`,
+      `Decision: ${approved ? "Approved for public listing" : "Rejected for changes"}`,
+      "",
+      `Review note: ${reviewNote}`,
+      "",
+      approved
+        ? "Your product is now eligible to appear in The Market Directory when your storefront is public/listed."
+        : "Please update the product details in your Store Host dashboard and resubmit it for review.",
+      "",
+      "American Dev Corp"
+    ].join("\n")
+  };
+}
+
 export function approvalEmail({ name, appName, code }) {
   return {
     subject: `American Dev Corp approval for ${appName || "your iOS app"}`,

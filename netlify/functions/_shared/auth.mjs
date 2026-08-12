@@ -32,25 +32,35 @@ async function signature(payload) {
   return base64url(signed);
 }
 
-export async function createToken() {
+export async function createRoleToken(role = "admin", claims = {}) {
   const payload = base64url(encoder.encode(JSON.stringify({
-    role: "admin",
+    role,
+    ...claims,
     exp: Date.now() + 1000 * 60 * 60 * 12
   })));
   return `${payload}.${await signature(payload)}`;
 }
 
-export async function verifyToken(token) {
-  if (!token || !token.includes(".")) return false;
+export async function createToken() {
+  return createRoleToken("admin");
+}
+
+export async function readToken(token) {
+  if (!token || !token.includes(".")) return null;
   const [payload, sig] = token.split(".");
-  if (sig !== await signature(payload)) return false;
+  if (sig !== await signature(payload)) return null;
 
   try {
     const parsed = JSON.parse(base64urlDecode(payload).toString("utf8"));
-    return parsed.role === "admin" && parsed.exp > Date.now();
+    return parsed.exp > Date.now() ? parsed : null;
   } catch {
-    return false;
+    return null;
   }
+}
+
+export async function verifyToken(token) {
+  const parsed = await readToken(token);
+  return parsed?.role === "admin";
 }
 
 export function cookieToken(req) {
@@ -62,8 +72,15 @@ export function cookieToken(req) {
     ?.split("=")[1];
 }
 
+export function bearerToken(req) {
+  const authorization = req.headers.get("authorization") || "";
+  const [scheme, token] = authorization.split(/\s+/);
+  return scheme?.toLowerCase() === "bearer" ? token : "";
+}
+
 export async function requireAdmin(req) {
   if (await verifyToken(cookieToken(req))) return null;
+  if (await verifyToken(bearerToken(req))) return null;
   return json({ error: "Unauthorized" }, { status: 401 });
 }
 
