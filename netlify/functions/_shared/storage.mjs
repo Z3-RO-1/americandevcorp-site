@@ -5,6 +5,7 @@ export const applicationStore = () => getStore({ name: "ios-application-submissi
 export const accessCodeStore = () => getStore({ name: "ios-submission-access-codes", consistency: "strong" });
 export const signInCodeStore = () => getStore({ name: "site-sign-in-codes", consistency: "strong" });
 export const marketDirectoryStore = () => getStore({ name: "market-directory-beta-intake", consistency: "strong" });
+export const hostAccessCodeStore = () => getStore({ name: "market-directory-host-access-codes", consistency: "strong" });
 
 export function makeId(prefix) {
   return `${prefix}_${Date.now()}_${crypto.randomUUID()}`;

@@ -103,6 +103,23 @@ export function approvalEmail({ name, appName, code }) {
   };
 }
 
+export function hostAccessCodeEmail({ businessName, code }) {
+  return {
+    subject: `Your Store Host access code${businessName ? ` for ${businessName}` : ""}`,
+    text: [
+      "An admin approved your request to become a Store Host on The Market Directory.",
+      "",
+      "Use the code below in the app to finish creating your storefront:",
+      "",
+      code,
+      "",
+      "This code is tied to the email address it was sent to and can only be used once.",
+      "",
+      "American Dev Corp"
+    ].join("\n")
+  };
+}
+
 export function denialEmail({ name, appName }) {
   return {
     subject: `American Dev Corp update for ${appName || "your iOS app request"}`,
