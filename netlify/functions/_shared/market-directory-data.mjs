@@ -54,6 +54,8 @@ function hostSeedFromRecord(record) {
     beta_trial_ends_at: text(payload.beta_trial_ends_at),
     is_sponsored_by_market_directory: bool(payload.is_sponsored_by_market_directory),
     last_purchase_note: text(payload.last_purchase_note),
+    phone: text(payload.phone),
+    non_public_since: text(payload.non_public_since) || null,
     created_at: record.createdAt
   };
 }
@@ -66,6 +68,8 @@ function applyStatus(host, record) {
     category_name: text(payload.category_name) || host.category_name,
     city: text(payload.city) || host.city,
     state: text(payload.state) || host.state,
+    phone: text(payload.phone) || host.phone,
+    non_public_since: hasOwn(payload, "non_public_since") ? (text(payload.non_public_since) || null) : host.non_public_since,
     business_summary: text(payload.business_summary) || host.business_summary,
     requires_age_verification: hasOwn(payload, "requires_age_verification") ? bool(payload.requires_age_verification) : host.requires_age_verification,
     minimum_age: hasOwn(payload, "minimum_age") ? int(payload.minimum_age, host.minimum_age) : host.minimum_age,

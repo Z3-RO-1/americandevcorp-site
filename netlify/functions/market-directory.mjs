@@ -32,9 +32,12 @@ const productEffects = {
 // never from a host's own direct storefront-status call. See the audit finding this closes:
 // "the backend checks no credentials on any endpoint" (storefront-status could grant free
 // subscriptions and edit credits to anyone who called it).
-const hostSelfEditableFields = ["business_summary", "category_name", "city", "state", "requires_age_verification", "minimum_age"];
+const hostSelfEditableFields = ["business_summary", "category_name", "city", "state", "phone", "requires_age_verification", "minimum_age"];
 const hostSelfAllowedStatus = new Set(["Active", "Not Public"]);
-const hostAdminOnlyFields = ["is_live_subscription_active", "setup_package_purchased", "edit_request_credits", "is_sponsored_by_market_directory", "last_purchase_note"];
+// non_public_since is admin-only: it's the deletion-safety clock (must sit non-public for 7 days
+// before an admin can delete a managed store), so only the admin action that flips status to
+// "Not Public" is allowed to start or clear it — a host can't self-service their own hold.
+const hostAdminOnlyFields = ["is_live_subscription_active", "setup_package_purchased", "edit_request_credits", "is_sponsored_by_market_directory", "last_purchase_note", "non_public_since"];
 
 const allowedEndpoints = new Set([
   "consumer-signup",
