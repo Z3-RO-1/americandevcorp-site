@@ -1,5 +1,5 @@
 import { adminPasswordMatches, bearerToken, createRoleToken, readToken, requireAdmin } from "./_shared/auth.mjs";
-import { adminMarketDirectoryEmail, marketDirectoryProductDecisionEmail, sendEmail } from "./_shared/email.mjs";
+import { adminMarketDirectoryEmail, marketDirectoryProductDecisionEmail, marketDirectoryStorefrontEnrollmentEmail, sendEmail } from "./_shared/email.mjs";
 import { json, readJSON } from "./_shared/json.mjs";
 import { listStoreJSON, makeId, marketDirectoryMediaStore, marketDirectoryStore } from "./_shared/storage.mjs";
 
@@ -27,13 +27,15 @@ const allowedEndpoints = new Set([
   "product-media",
   "support-request",
   "host-access-request",
+  "storefront-enrollment-email",
   "sponsorship-request",
   "storefront-status",
   "billing-receipt"
 ]);
 
 const adminWriteEndpoints = new Set([
-  "storefront-status"
+  "storefront-status",
+  "storefront-enrollment-email"
 ]);
 
 const liveStorefrontProductID = "com.americandevcorp.marketdirectory.live_storefront.monthly";
@@ -92,6 +94,8 @@ function titleFor(endpoint, payload) {
       return payload.business_name || payload.email || "Sponsorship request";
     case "host-access-request":
       return payload.business_name || payload.email || "Hosting access request";
+    case "storefront-enrollment-email":
+      return payload.business_name || payload.owner_email || payload.to_email || "Storefront enrollment email";
     case "billing-receipt":
       return payload.business_name || payload.product_id || "Billing receipt";
     case "storefront-status":
@@ -432,6 +436,62 @@ async function latestOwnerAgreementForEmail(email) {
       && text(payload.email).toLowerCase() === normalizedEmail
       && text(payload.agreement_version) === ownerPortalAgreementVersion;
   }) || null;
+}
+
+async function createStorefrontEnrollmentEmail(payload) {
+  const ownerEmail = text(payload.to_email || payload.owner_email).toLowerCase();
+  const businessName = text(payload.business_name);
+
+  if (!ownerEmail) {
+    return json({ error: "Owner email is required." }, { status: 400 });
+  }
+
+  if (!businessName) {
+    return json({ error: "Business name is required." }, { status: 400 });
+  }
+
+  const now = new Date().toISOString();
+  const record = {
+    id: makeId("market_storefront_enrollment_email"),
+    type: "market-directory",
+    endpoint: "storefront-enrollment-email",
+    title: businessName,
+    status: "pending",
+    createdAt: now,
+    payload: {
+      ...payload,
+      to_email: ownerEmail,
+      owner_email: text(payload.owner_email || ownerEmail).toLowerCase(),
+      cc_email: text(payload.cc_email).toLowerCase(),
+      bcc_email: text(payload.bcc_email || payload.admin_copy_email).toLowerCase(),
+      business_name: businessName,
+      owner_name: text(payload.owner_name),
+      category_name: text(payload.category_name),
+      city: text(payload.city),
+      state: text(payload.state).toUpperCase(),
+      phone: text(payload.phone),
+      website: text(payload.website),
+      hours: text(payload.hours),
+      business_summary: text(payload.business_summary),
+      sent_at: now
+    }
+  };
+
+  await marketDirectoryStore().setJSON(record.id, record);
+
+  const emailResult = await sendEmail(marketDirectoryStorefrontEnrollmentEmail(record));
+  if (!emailResult?.sent) {
+    record.status = "failed";
+    record.payload.email_error = emailResult?.reason || "email provider unavailable";
+    await marketDirectoryStore().setJSON(record.id, record);
+    return json({ error: `Enrollment email could not be sent: ${record.payload.email_error}` }, { status: 503 });
+  }
+
+  record.status = "sent";
+  record.payload.sent_at = new Date().toISOString();
+  await marketDirectoryStore().setJSON(record.id, record);
+
+  return json({ ok: true, id: record.id, email: ownerEmail, cc_email: record.payload.cc_email, bcc_email: record.payload.bcc_email });
 }
 
 async function createStoreHostCodeRequest(payload) {
@@ -1312,6 +1372,10 @@ export default async (req) => {
   if (adminWriteEndpoints.has(endpoint)) {
     const unauthorized = await requireAdmin(req);
     if (unauthorized) return unauthorized;
+  }
+
+  if (endpoint === "storefront-enrollment-email") {
+    return createStorefrontEnrollmentEmail(payload);
   }
 
   if (endpoint === "storefront-product") {

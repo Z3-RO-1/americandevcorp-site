@@ -4,7 +4,7 @@ function env(name) {
   return Netlify.env.get(name);
 }
 
-export async function sendEmail({ to, subject, text }) {
+export async function sendEmail({ to, cc, bcc, subject, text, attachments }) {
   const resendKey = env("RESEND_API_KEY");
   const from = env("FROM_EMAIL") || "American Dev Corp <noreply@americandevcorp.com>";
 
@@ -22,8 +22,11 @@ export async function sendEmail({ to, subject, text }) {
     body: JSON.stringify({
       from,
       to: Array.isArray(to) ? to : [to],
+      ...(cc ? { cc: Array.isArray(cc) ? cc : [cc] } : {}),
+      ...(bcc ? { bcc: Array.isArray(bcc) ? bcc : [bcc] } : {}),
       subject,
-      text
+      text,
+      ...(attachments ? { attachments } : {})
     })
   });
 
@@ -80,6 +83,55 @@ export function adminMarketDirectoryEmail(record) {
       `Submitted: ${record.createdAt}`,
       "",
       ...Object.entries(record.payload || {}).map(([key, value]) => `${key}: ${Array.isArray(value) ? value.join(", ") : value}`)
+    ].join("\n")
+  };
+}
+
+export function marketDirectoryStorefrontEnrollmentEmail(record) {
+  const payload = record.payload || {};
+  const ownerName = payload.owner_name || "there";
+  const businessName = payload.business_name || "your business";
+  const steps = Array.isArray(payload.enrollment_steps) && payload.enrollment_steps.length
+    ? payload.enrollment_steps
+    : [
+      "Contact: You connected with your local ADC representative.",
+      "Enroll: We collected the basic details needed to create your business draft.",
+      "We Build: ADC researches and builds your storefront draft for review.",
+      "Preview: We send you a complete draft so you can suggest changes.",
+      "Approve: Your approval is all we need for the final version.",
+      "Publish: Your storefront goes live on The Market Directory."
+    ];
+  const businessLines = [
+    `Business: ${businessName}`,
+    `Category: ${payload.category_name || "Not provided"}`,
+    `Location: ${[payload.city, payload.state].filter(Boolean).join(", ") || "Not provided"}`,
+    `Phone: ${payload.phone || "Not provided"}`,
+    `Website: ${payload.website || "Not provided"}`,
+    `Hours: ${payload.hours || "Not provided"}`
+  ];
+
+  return {
+    to: payload.to_email || payload.owner_email,
+    cc: payload.cc_email || undefined,
+    bcc: payload.bcc_email || payload.admin_copy_email || undefined,
+    subject: payload.subject || "Your Market Directory enrollment is started",
+    text: payload.message || [
+      `Hi ${ownerName},`,
+      "",
+      `Thank you for enrolling ${businessName} in The Market Directory.`,
+      "",
+      "We created a non-public draft storefront from the details you shared. Our next step is to complete the storefront draft, add available business information, prepare products or services where applicable, and send you a preview for approval before anything is published.",
+      "",
+      "What happens next:",
+      ...steps.map((step) => `- ${step}`),
+      "",
+      "Business on file:",
+      ...businessLines,
+      "",
+      "Your part is easy: review the preview when we send it and let us know what should change. We take care of the setup work.",
+      "",
+      "American Dev Corp",
+      "The Market Directory"
     ].join("\n")
   };
 }
