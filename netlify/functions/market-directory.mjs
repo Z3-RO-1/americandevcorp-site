@@ -5,6 +5,7 @@ import { listStoreJSON, makeId, marketDirectoryMediaStore, marketDirectoryStore 
 
 const allowedEndpoints = new Set([
   "consumer-signup",
+  "consumer-session",
   "message",
   "storefront-open",
   "storefront-upvote",
@@ -62,6 +63,8 @@ function titleFor(endpoint, payload) {
   switch (endpoint) {
     case "consumer-signup":
       return payload.email || "New consumer signup";
+    case "consumer-session":
+      return payload.email || "Consumer session";
     case "message":
       return payload.storefront_name || "Storefront message";
     case "storefront-open":
@@ -413,6 +416,38 @@ async function createStoreHostSession(payload) {
     storefront_name: text(hostRecord.payload.business_name)
   });
   return json({ ok: true, email, storefront_name: text(hostRecord.payload.business_name), store_host_token: token });
+}
+
+async function consumerSignupForEmail(email) {
+  const normalizedEmail = text(email).toLowerCase();
+  if (!normalizedEmail) {
+    return null;
+  }
+
+  const records = await listStoreJSON(marketDirectoryStore());
+  return records.find((record) => {
+    const payload = record.payload || {};
+    return record.endpoint === "consumer-signup"
+      && text(payload.email).toLowerCase() === normalizedEmail
+      && text(payload.password_hash);
+  }) || null;
+}
+
+async function createConsumerSession(payload) {
+  const email = text(payload.email).toLowerCase();
+  const password = String(payload.password || "");
+  if (!email || !password) {
+    return json({ error: "Email and password are required." }, { status: 400 });
+  }
+
+  const consumerRecord = await consumerSignupForEmail(email);
+  const expectedHash = text(consumerRecord?.payload?.password_hash);
+  if (!consumerRecord || !expectedHash || expectedHash !== await passwordHash(email, password)) {
+    return json({ error: "Invalid consumer sign in." }, { status: 401 });
+  }
+
+  const token = await createRoleToken("consumer", { email });
+  return json({ ok: true, email, consumer_token: token });
 }
 
 function sixDigitCode() {
@@ -927,6 +962,89 @@ async function listStorefrontOrders(req) {
   });
 }
 
+function reviewFromRecord(record) {
+  const payload = record.payload || {};
+  const storefrontName = normalizedStorefrontName(payload);
+
+  if (!storefrontName) {
+    return null;
+  }
+
+  return {
+    review_id: record.id,
+    storefront_name: storefrontName,
+    consumer_email: text(payload.consumer_email),
+    reviewer_name: text(payload.reviewer_name) || "A Customer",
+    rating: int(payload.rating, 0),
+    purchased: bool(payload.purchased),
+    badges: Array.isArray(payload.badges) ? payload.badges.map((badge) => text(badge)).filter(Boolean) : [],
+    body: text(payload.body),
+    submitted_at: text(payload.submitted_at) || record.createdAt
+  };
+}
+
+async function listStorefrontReviews(req) {
+  const records = await listStoreJSON(marketDirectoryStore());
+  const url = new URL(req.url);
+  const storefrontFilter = text(url.searchParams.get("storefront_name")).toLowerCase();
+
+  const reviews = records
+    .filter((record) => record.endpoint === "storefront-review")
+    .map((record) => reviewFromRecord(record))
+    .filter(Boolean)
+    .filter((review) => !storefrontFilter || review.storefront_name.toLowerCase() === storefrontFilter);
+
+  return json({
+    ok: true,
+    storefront_reviews: reviews.sort((a, b) => String(b.submitted_at).localeCompare(String(a.submitted_at)))
+  });
+}
+
+async function listConsumerFavorites(req) {
+  const records = await listStoreJSON(marketDirectoryStore());
+  const url = new URL(req.url);
+  const consumerFilter = text(url.searchParams.get("consumer_email")).toLowerCase();
+
+  if (!consumerFilter) {
+    return json({ error: "consumer_email query parameter is required." }, { status: 400 });
+  }
+
+  const latestByStorefront = new Map();
+
+  for (const record of records) {
+    if (record.endpoint !== "storefront-upvote") {
+      continue;
+    }
+
+    const payload = record.payload || {};
+    if (text(payload.consumer_email).toLowerCase() !== consumerFilter) {
+      continue;
+    }
+
+    const storefrontName = normalizedStorefrontName(payload);
+    if (!storefrontName) {
+      continue;
+    }
+
+    const timestamp = text(payload.updated_at) || record.createdAt;
+    const existing = latestByStorefront.get(storefrontName.toLowerCase());
+    if (!existing || String(timestamp).localeCompare(String(existing.timestamp)) >= 0) {
+      latestByStorefront.set(storefrontName.toLowerCase(), {
+        storefront_name: storefrontName,
+        upvoted: bool(payload.upvoted),
+        timestamp
+      });
+    }
+  }
+
+  const favoriteStorefrontNames = Array.from(latestByStorefront.values())
+    .filter((entry) => entry.upvoted)
+    .sort((a, b) => String(b.timestamp).localeCompare(String(a.timestamp)))
+    .map((entry) => entry.storefront_name);
+
+  return json({ ok: true, favorite_storefront_names: favoriteStorefrontNames });
+}
+
 function merchantContactFromRecord(record) {
   const payload = record.payload || {};
   const storefrontName = normalizedStorefrontName(payload);
@@ -1321,6 +1439,14 @@ export default async (req) => {
       return listStorefrontOrders(req);
     }
 
+    if (endpoint === "storefront-reviews") {
+      return listStorefrontReviews(req);
+    }
+
+    if (endpoint === "consumer-favorites") {
+      return listConsumerFavorites(req);
+    }
+
     if (endpoint === "merchant-contacts") {
       return listMerchantContacts(req);
     }
@@ -1355,6 +1481,10 @@ export default async (req) => {
 
   if (endpoint === "store-host-session") {
     return createStoreHostSession(payload);
+  }
+
+  if (endpoint === "consumer-session") {
+    return createConsumerSession(payload);
   }
 
   if (endpoint === "store-host-code-request") {
@@ -1416,6 +1546,11 @@ export default async (req) => {
   }
 
   if (endpoint === "store-host-signup" && payload.password) {
+    payload.password_hash = await passwordHash(payload.email, payload.password);
+    delete payload.password;
+  }
+
+  if (endpoint === "consumer-signup" && payload.password) {
     payload.password_hash = await passwordHash(payload.email, payload.password);
     delete payload.password;
   }
