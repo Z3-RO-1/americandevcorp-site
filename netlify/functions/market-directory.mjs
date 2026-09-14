@@ -6,6 +6,7 @@ import { listStoreJSON, makeId, marketDirectoryMediaStore, marketDirectoryStore 
 const allowedEndpoints = new Set([
   "consumer-signup",
   "consumer-session",
+  "consumer-delete-account",
   "message",
   "storefront-open",
   "storefront-upvote",
@@ -448,6 +449,42 @@ async function createConsumerSession(payload) {
 
   const token = await createRoleToken("consumer", { email });
   return json({ ok: true, email, consumer_token: token });
+}
+
+async function consumerSignupRecordsForEmail(email) {
+  const normalizedEmail = text(email).toLowerCase();
+  if (!normalizedEmail) {
+    return [];
+  }
+
+  const records = await listStoreJSON(marketDirectoryStore());
+  return records.filter((record) => {
+    const payload = record.payload || {};
+    return record.endpoint === "consumer-signup" && text(payload.email).toLowerCase() === normalizedEmail;
+  });
+}
+
+async function deleteConsumerAccount(req, payload) {
+  const token = await readToken(bearerToken(req));
+  if (token?.role !== "consumer") {
+    return json({ error: "Consumer sign-in is required to delete this account." }, { status: 401 });
+  }
+
+  const email = text(payload.email || token.email).toLowerCase();
+  if (!email || email !== text(token.email).toLowerCase()) {
+    return json({ error: "Account deletion email does not match the signed-in consumer." }, { status: 403 });
+  }
+
+  const records = await consumerSignupRecordsForEmail(email);
+  if (records.length === 0) {
+    return json({ error: "No consumer account was found for that email." }, { status: 404 });
+  }
+
+  for (const record of records) {
+    await marketDirectoryStore().delete(record.key);
+  }
+
+  return json({ ok: true, email, deleted: records.length });
 }
 
 function sixDigitCode() {
@@ -1485,6 +1522,10 @@ export default async (req) => {
 
   if (endpoint === "consumer-session") {
     return createConsumerSession(payload);
+  }
+
+  if (endpoint === "consumer-delete-account") {
+    return deleteConsumerAccount(req, payload);
   }
 
   if (endpoint === "store-host-code-request") {
