@@ -1082,6 +1082,51 @@ async function listConsumerFavorites(req) {
   return json({ ok: true, favorite_storefront_names: favoriteStorefrontNames });
 }
 
+function consumerContactFromRecord(record) {
+  const payload = record.payload || {};
+  const email = text(payload.email).toLowerCase();
+  if (!email) {
+    return null;
+  }
+
+  return {
+    email,
+    first_name: text(payload.first_name),
+    last_name: text(payload.last_name),
+    created_at: record.createdAt
+  };
+}
+
+async function listConsumerContacts(req) {
+  const unauthorized = await requireAdmin(req);
+  if (unauthorized) return unauthorized;
+
+  const records = await listStoreJSON(marketDirectoryStore());
+  const latestByEmail = new Map();
+
+  for (const record of records) {
+    if (record.endpoint !== "consumer-signup") {
+      continue;
+    }
+
+    const contact = consumerContactFromRecord(record);
+    if (!contact) {
+      continue;
+    }
+
+    const existing = latestByEmail.get(contact.email);
+    if (!existing || String(contact.created_at).localeCompare(String(existing.created_at)) >= 0) {
+      latestByEmail.set(contact.email, contact);
+    }
+  }
+
+  return json({
+    ok: true,
+    consumer_contacts: Array.from(latestByEmail.values())
+      .sort((a, b) => String(b.created_at).localeCompare(String(a.created_at)))
+  });
+}
+
 function merchantContactFromRecord(record) {
   const payload = record.payload || {};
   const storefrontName = normalizedStorefrontName(payload);
@@ -1486,6 +1531,10 @@ export default async (req) => {
 
     if (endpoint === "merchant-contacts") {
       return listMerchantContacts(req);
+    }
+
+    if (endpoint === "consumer-contacts") {
+      return listConsumerContacts(req);
     }
 
     if (endpoint === "product-media") {
