@@ -2,6 +2,7 @@ import { adminPasswordMatches, bearerToken, createRoleToken, readToken, requireA
 import { adminMarketDirectoryEmail, marketDirectoryProductDecisionEmail, marketDirectoryStorefrontEnrollmentEmail, sendEmail } from "./_shared/email.mjs";
 import { json, readJSON } from "./_shared/json.mjs";
 import { listStoreJSON, makeId, marketDirectoryMediaStore, marketDirectoryStore } from "./_shared/storage.mjs";
+import { getOrCreateCustomerForBusiness, getOrCreateListingPrice, getOrCreateTerminalLocation, stripeClient } from "./_shared/stripe.mjs";
 
 const allowedEndpoints = new Set([
   "consumer-signup",
@@ -32,12 +33,18 @@ const allowedEndpoints = new Set([
   "storefront-enrollment-email",
   "sponsorship-request",
   "storefront-status",
-  "billing-receipt"
+  "billing-receipt",
+  "stripe-connection-token",
+  "stripe-terminal-location",
+  "stripe-start-subscription"
 ]);
 
 const adminWriteEndpoints = new Set([
   "storefront-status",
-  "storefront-enrollment-email"
+  "storefront-enrollment-email",
+  "stripe-connection-token",
+  "stripe-terminal-location",
+  "stripe-start-subscription"
 ]);
 
 const liveStorefrontProductID = "com.americandevcorp.marketdirectory.live_storefront.monthly";
@@ -218,6 +225,7 @@ function hostSeedFromRecord(record) {
     requires_age_verification: bool(payload.requires_age_verification),
     minimum_age: int(payload.minimum_age, 18),
     is_live_subscription_active: bool(payload.is_live_subscription_active),
+    live_subscription_renews_at: text(payload.live_subscription_renews_at),
     setup_package_purchased: bool(payload.setup_package_purchased),
     edit_request_credits: int(payload.edit_request_credits, 0),
     beta_service_mode: text(payload.beta_service_mode) || ownerManagedTrialMode,
@@ -249,6 +257,7 @@ function applyStatus(host, record) {
     requires_age_verification: hasOwn(payload, "requires_age_verification") ? bool(payload.requires_age_verification) : host.requires_age_verification,
     minimum_age: hasOwn(payload, "minimum_age") ? int(payload.minimum_age, host.minimum_age) : host.minimum_age,
     is_live_subscription_active: hasOwn(payload, "is_live_subscription_active") ? bool(payload.is_live_subscription_active) : host.is_live_subscription_active,
+    live_subscription_renews_at: hasOwn(payload, "live_subscription_renews_at") ? text(payload.live_subscription_renews_at) : host.live_subscription_renews_at,
     setup_package_purchased: hasOwn(payload, "setup_package_purchased") ? bool(payload.setup_package_purchased) : host.setup_package_purchased,
     edit_request_credits: hasOwn(payload, "edit_request_credits") ? int(payload.edit_request_credits, host.edit_request_credits) : host.edit_request_credits,
     beta_service_mode: text(payload.beta_service_mode) || host.beta_service_mode,
@@ -1485,6 +1494,161 @@ async function storeProductPhotoSet(req, payload) {
   return null;
 }
 
+// Returns a Stripe Terminal ConnectionToken secret for the iOS Terminal SDK's ConnectionTokenProvider.
+// Admin-only: only the admin's device drives Tap to Pay collection.
+async function createStripeConnectionToken() {
+  try {
+    const stripe = stripeClient();
+    const connectionToken = await stripe.terminal.connectionTokens.create();
+    return json({ ok: true, secret: connectionToken.secret });
+  } catch (error) {
+    return json({ error: `Could not create a Stripe Terminal connection token: ${error?.message || String(error)}` }, { status: 502 });
+  }
+}
+
+// Tap to Pay readers must be associated with a Terminal Location at connect time. This is
+// self-configuring: it looks up (or creates on first use) a single Location for the admin's device.
+async function createStripeTerminalLocation() {
+  try {
+    const location = await getOrCreateTerminalLocation();
+    return json({ ok: true, location_id: location.id });
+  } catch (error) {
+    return json({ error: `Could not resolve a Stripe Terminal location: ${error?.message || String(error)}` }, { status: 502 });
+  }
+}
+
+// Billing architecture (see project notes): the admin has already collected a $4.99 PaymentIntent
+// via Tap to Pay with setup_future_usage=off_session. This endpoint:
+//   1. Confirms that PaymentIntent succeeded and pulls the reusable "generated_card" PaymentMethod
+//      out of its latest charge (card_present payments only attach a saved card there, not on the
+//      PaymentIntent itself, unless a Customer was supplied at creation time - it wasn't here).
+//   2. Gets or creates a Stripe Customer for this business and attaches/defaults that PaymentMethod.
+//   3. Creates a monthly Subscription anchored to the 1st of the month with proration disabled, so
+//      the stub period between today and the 1st is free (already covered by the immediate charge)
+//      and real recurring billing starts cleanly on the 1st.
+//   4. Flips is_live_subscription_active on the business's Store Host record via the same
+//      append-only "storefront-status" record mechanism the rest of this file uses.
+async function createStripeStartSubscription(payload) {
+  const businessName = text(payload.business_name);
+  const email = text(payload.email).toLowerCase();
+  const paymentIntentId = text(payload.payment_intent_id);
+
+  if (!businessName) {
+    return json({ error: "Business name is required to start a subscription." }, { status: 400 });
+  }
+
+  if (!paymentIntentId) {
+    return json({ error: "A completed Tap to Pay payment intent ID is required." }, { status: 400 });
+  }
+
+  let stripe;
+  try {
+    stripe = stripeClient();
+  } catch (error) {
+    return json({ error: error.message }, { status: 500 });
+  }
+
+  let paymentIntent;
+  try {
+    paymentIntent = await stripe.paymentIntents.retrieve(paymentIntentId, {
+      expand: ["latest_charge"]
+    });
+  } catch (error) {
+    return json({ error: `Could not look up the Tap to Pay payment: ${error?.message || String(error)}` }, { status: 502 });
+  }
+
+  if (paymentIntent.status !== "succeeded") {
+    return json({ error: `The Tap to Pay payment has not completed (status: ${paymentIntent.status}). Try the card again.` }, { status: 409 });
+  }
+
+  const paymentMethodDetails = paymentIntent.latest_charge?.payment_method_details;
+  const generatedCardId = paymentMethodDetails?.card_present?.generated_card
+    || paymentMethodDetails?.interac_present?.generated_card;
+
+  if (!generatedCardId) {
+    return json({
+      error: "The card was charged, but no reusable saved card was generated for recurring billing (this can happen with some digital wallet taps). Ask for a different physical card and try again."
+    }, { status: 422 });
+  }
+
+  let customer;
+  try {
+    customer = await getOrCreateCustomerForBusiness({ businessName, email });
+  } catch (error) {
+    return json({ error: `Could not create the Stripe customer record: ${error?.message || String(error)}` }, { status: 502 });
+  }
+
+  try {
+    await stripe.paymentMethods.attach(generatedCardId, { customer: customer.id });
+  } catch (error) {
+    const alreadyAttached = String(error?.message || "").toLowerCase().includes("already been attached");
+    if (!alreadyAttached) {
+      return json({ error: `Could not save the card to the business's billing profile: ${error?.message || String(error)}` }, { status: 502 });
+    }
+  }
+
+  try {
+    await stripe.customers.update(customer.id, {
+      invoice_settings: { default_payment_method: generatedCardId }
+    });
+  } catch (error) {
+    return json({ error: `Could not set the saved card as the default payment method: ${error?.message || String(error)}` }, { status: 502 });
+  }
+
+  let price;
+  try {
+    price = await getOrCreateListingPrice();
+  } catch (error) {
+    return json({ error: `Could not resolve the $4.99/month listing price: ${error?.message || String(error)}` }, { status: 502 });
+  }
+
+  let subscription;
+  try {
+    subscription = await stripe.subscriptions.create({
+      customer: customer.id,
+      items: [{ price: price.id }],
+      default_payment_method: generatedCardId,
+      billing_cycle_anchor_config: { day_of_month: 1 },
+      proration_behavior: "none"
+    });
+  } catch (error) {
+    return json({ error: `Could not start the recurring subscription: ${error?.message || String(error)}` }, { status: 502 });
+  }
+
+  const now = new Date();
+  const nextBillingAt = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() + 1, 1)).toISOString();
+
+  const statusRecord = {
+    id: makeId("market_storefront_status"),
+    type: "market-directory",
+    endpoint: "storefront-status",
+    title: businessName,
+    status: "new",
+    createdAt: now.toISOString(),
+    payload: {
+      business_name: businessName,
+      email,
+      is_live_subscription_active: true,
+      live_subscription_renews_at: nextBillingAt,
+      last_purchase_note: `Tap to Pay: admin-collected $4.99 signup charge; Stripe subscription ${subscription.id} bills $4.99 on the 1st of each month.`
+    }
+  };
+  await marketDirectoryStore().setJSON(statusRecord.id, statusRecord);
+
+  // TODO(follow-up form): once the legal/business-details intake form exists, trigger the
+  // automated "finish your listing" email here. Intentionally out of scope for this Tap to Pay
+  // integration - see project notes.
+
+  return json({
+    ok: true,
+    business_name: businessName,
+    customer_id: customer.id,
+    subscription_id: subscription.id,
+    payment_intent_id: paymentIntent.id,
+    next_billing_at: nextBillingAt
+  });
+}
+
 export default async (req) => {
   const endpoint = endpointFromRequest(req);
 
@@ -1600,6 +1764,18 @@ export default async (req) => {
 
   if (endpoint === "storefront-enrollment-email") {
     return createStorefrontEnrollmentEmail(payload);
+  }
+
+  if (endpoint === "stripe-connection-token") {
+    return createStripeConnectionToken();
+  }
+
+  if (endpoint === "stripe-terminal-location") {
+    return createStripeTerminalLocation();
+  }
+
+  if (endpoint === "stripe-start-subscription") {
+    return createStripeStartSubscription(payload);
   }
 
   if (endpoint === "storefront-product") {

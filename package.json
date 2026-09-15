@@ -4,7 +4,8 @@
     "build": "echo \"Static site ready\""
   },
   "dependencies": {
-    "@netlify/blobs": "^9.1.0"
+    "@netlify/blobs": "^9.1.0",
+    "stripe": "^22.6.2"
   },
   "devDependencies": {
     "@netlify/functions": "^3.0.0"
